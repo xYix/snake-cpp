@@ -11,11 +11,24 @@
 
 #include "game.h"
 
+#define FOOD_COLOR 1
+#define SNAKE_COLOR 2
+#define DEFAULT_COLOR 3
+
 Game::Game()
 {
     // Separate the screen to three windows
     this->mWindows.resize(3);
     initscr();
+    if (has_colors() == false)
+    {
+        printf("No color support!\n");
+        exit(0);
+    }
+    start_color();
+    init_pair(FOOD_COLOR, COLOR_RED, COLOR_BLACK);
+    init_pair(SNAKE_COLOR, COLOR_GREEN, COLOR_BLACK);
+    init_pair(DEFAULT_COLOR, COLOR_WHITE, COLOR_BLACK);
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -248,14 +261,17 @@ void Game::createRamdonFood()
 }
 
 void Game::renderFood() const
-{
+{   
+    wattrset(this->mWindows[1], COLOR_PAIR(FOOD_COLOR));
     for (const Food &i : this->mFood)
         mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), this->mFoodSymbol);
     wrefresh(this->mWindows[1]);
+    wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
 
 void Game::renderSnake() const
 {
+    wattrset(this->mWindows[1], COLOR_PAIR(SNAKE_COLOR));
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
     for (int i = 0; i < snakeLength; i ++)
@@ -263,6 +279,7 @@ void Game::renderSnake() const
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
     }
     wrefresh(this->mWindows[1]);
+    wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
 
 bool mysteriousSwitch = false;
