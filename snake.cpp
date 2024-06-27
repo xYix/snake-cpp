@@ -5,6 +5,8 @@
 
 #include "snake.h"
 
+#include <vector>
+
 
 SnakeBody::SnakeBody()
 {
@@ -25,7 +27,7 @@ int SnakeBody::getY() const
     return mY;
 }
 
-bool SnakeBody::operator == (const SnakeBody& snakeBody)
+const bool SnakeBody::operator == (const SnakeBody& snakeBody)
 {
     // overload the == operator for SnakeBody comparision.
     if (this->getX() == snakeBody.getX() && this->getY() == snakeBody.getY())
@@ -63,7 +65,7 @@ bool Snake::isPartOfSnake(int x, int y)
 {
     // check if a given point with axis x, y is on the body of the snake.
     for (SnakeBody &i : this->mSnake)
-        if (i.getX() == x && i.getY() == y)
+        if (i == SnakeBody(x, y))
             return true;
     return false;
 }
@@ -97,17 +99,13 @@ bool Snake::hitSelf()
 bool Snake::touchFood()
 {
     SnakeBody newHead = this->createNewHead();
-    if (this->mFood == newHead)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    for (const Food &i : this->mFood)
+        if (newHead == i.getPos())
+            return true;
+    return false;
 }
 
-void Snake::senseFood(SnakeBody food)
+void Snake::senseFood(const std::vector<Food> &food)
 {
     this->mFood = food;
 }
@@ -184,3 +182,7 @@ int Snake::getLength()
     return this->mSnake.size();
 }
 
+Food::Food(SnakeBody Pos) : mPos(Pos) {};
+SnakeBody Food::getPos() const {
+    return mPos;
+}

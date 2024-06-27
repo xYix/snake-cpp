@@ -218,7 +218,8 @@ void Game::initializeGame()
      * other initializations
      */
     this->mPoints = 0;
-    this->createRamdonFood();
+    for (int i = 0; i < this->mFoodCount; i++)
+        this->createRamdonFood();
     this->mPtrSnake->senseFood(this->mFood);
     this->adjustDelay();
     // ...
@@ -230,20 +231,26 @@ void Game::createRamdonFood()
      * create a food at random places
      * make sure that the food doesn't overlap with the snake.
      */
-    int x = 1 + rand() % (this->mGameBoardWidth - 2),
-        y = 1 + rand() % (this->mGameBoardHeight - 2);
-    while (this->mPtrSnake->isPartOfSnake(x, y))
+    int x, y;
+    while (true) {
         x = 1 + rand() % (this->mGameBoardWidth - 2),
         y = 1 + rand() % (this->mGameBoardHeight - 2);
+        if (this->mPtrSnake->isPartOfSnake(x, y)) continue;
+        for (const Food &i : this->mFood)
+            if (i.getPos() == SnakeBody(x, y))
+                continue;
+        break;
+    }
     /*
     ? When whole screen is fully occupied by snake
     */
-    this->mFood = SnakeBody(x, y);
+    this->mFood.push_back(SnakeBody(x, y));
 }
 
 void Game::renderFood() const
 {
-    mvwaddch(this->mWindows[1], this->mFood.getY(), this->mFood.getX(), this->mFoodSymbol);
+    for (const Food &i : this->mFood)
+        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), this->mFoodSymbol);
     wrefresh(this->mWindows[1]);
 }
 
@@ -361,6 +368,13 @@ void Game::runGame()
 
         if (collision)
             break;
+        if (touchFood) {
+            for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
+                if (i->getPos() == this->mPtrSnake->createNewHead()) {
+                    this->mFood.erase(i);
+                    break;
+                }
+        }
         this->mPtrSnake->moveFoward(!touchFood);
         if (touchFood) {
             this->createRamdonFood();

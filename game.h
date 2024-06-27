@@ -64,11 +64,12 @@ private:
     const char mSnakeSymbol = '@';
     std::unique_ptr<Snake> mPtrSnake;
     // Food information
-    SnakeBody mFood;
+    std::vector<Food> mFood;
     const char mFoodSymbol = '#';
     int mPoints = 0;
     int mDifficulty = 0;
     int mBaseDelay = 100;
+    int mFoodCount = 3;
     int mDelay;
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;

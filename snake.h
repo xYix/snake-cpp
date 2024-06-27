@@ -18,10 +18,19 @@ public:
     SnakeBody(int x, int y);
     int getX() const;
     int getY() const;
-    bool operator == (const SnakeBody& snakeBody);
+    const bool operator == (const SnakeBody& snakeBody);
 private:
     int mX;
     int mY;
+};
+
+class Food
+{
+public:
+    Food (SnakeBody Pos);
+    SnakeBody getPos() const;
+private:
+    SnakeBody mPos;
 };
 
 // Snake class should have no depency on the GUI library
@@ -36,7 +45,7 @@ public:
     void initializeSnake();
     // Checking API for generating random food
     bool isPartOfSnake(int x, int y);
-    void senseFood(SnakeBody food);
+    void senseFood(const std::vector<Food> &food);
     bool touchFood();
     // Check if the snake is dead
     bool hitWall();
@@ -55,7 +64,7 @@ private:
     // Snake information
     const int mInitialSnakeLength;
     Direction mDirection;
-    SnakeBody mFood;
+    std::vector<Food> mFood;
     std::vector<SnakeBody> mSnake;
 };
 
