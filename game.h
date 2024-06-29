@@ -46,6 +46,8 @@ public:
 		void startGame();
     bool renderRestartMenu() const;
     void adjustDifficulty();
+
+    bool eatFood(const std::unique_ptr<Snake> &snake);
     
     std::unique_ptr<Snake> mPtrSnake;
     std::unique_ptr<Snake> mPtrEnemySnake = nullptr;
@@ -66,6 +68,7 @@ private:
     // Food information
     std::vector<Food> mFood;
     const char mFoodSymbol = '#';
+    const char mFakeFoodSymbol = 'a';
     int mPoints = 0;
     int mDifficulty = 0;
     int mBaseDelay = 100;

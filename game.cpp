@@ -241,6 +241,7 @@ void Game::initializeGame()
      * other initializations
      */
     this->mPoints = 0;
+    this->mFood.clear();
     for (int i = 0; i < this->mFoodCount; i++)
         this->createRandomFood();
     this->mPtrSnake->senseFood(this->mFood);
@@ -274,7 +275,7 @@ void Game::renderFood() const
 {   
     wattrset(this->mWindows[1], COLOR_PAIR(FOOD_COLOR));
     for (const Food &i : this->mFood)
-        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), this->mFoodSymbol);
+        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), i.isRealFood() ? this->mFoodSymbol : this->mFakeFoodSymbol);
     wrefresh(this->mWindows[1]);
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
@@ -368,7 +369,7 @@ void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
     this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
-    if (this->mDifficulty >= 1 && !this->mPtrEnemySnake) {
+    if (this->mDifficulty >= 2 && !this->mPtrEnemySnake) {
 	    this->mPtrEnemySnake.reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
         this->mPtrEnemySnake->senseFood(this->mFood);
     }
@@ -387,10 +388,21 @@ bool EnemySnake::checkCollision()
 {
     if (this->hitWall()) return true;
     if (this->hitSnake(this)) return true;
-    if (this->thisgame->mPtrSnake && this->hitSnake(this->thisgame->mPtrSnake.get()))
+    if (this->hitSnake(this->thisgame->mPtrSnake.get()))
         return true;
     return false;
 
+}
+
+bool Game::eatFood(const std::unique_ptr<Snake> &snake) {
+    // true if new food need to be spawned
+    for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
+        if (i->getPos() == snake->createNewHead()) {
+            bool res = i->isRealFood();
+            this->mFood.erase(i);
+            return res;
+        }
+    return false;
 }
 
 void Game::runGame()
@@ -415,28 +427,24 @@ void Game::runGame()
         this->createGameBoard();
 
         // Snake Move
-        bool touchFood = this->mPtrSnake->touchFood();
-        bool collision = this->mPtrSnake->checkCollision(); // backdoor
-        if (mysteriousSwitch == true) {
-            touchFood = true;
-            mysteriousSwitch = false;
-        }
+        bool collision = this->mPtrSnake->checkCollision();
         if (collision)
-            break;
+            break; // die
+        bool touchFood = this->mPtrSnake->touchFood();
+        bool eatFood = touchFood && this->eatFood(this->mPtrSnake);
+        this->mPtrSnake->moveFoward(!(touchFood || mysteriousSwitch));
         if (touchFood) {
-            for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
-                if (i->getPos() == this->mPtrSnake->createNewHead()) {
-                    this->mFood.erase(i);
-                    break;
-                }
+            this->mPoints += 1;
         }
-        this->mPtrSnake->moveFoward(!touchFood);
-        if (touchFood) {
+        if (eatFood) {
             this->createRandomFood();
             this->mPtrSnake->senseFood(this->mFood);
             if (this->mPtrEnemySnake)
                 this->mPtrEnemySnake->senseFood(this->mFood);
+        }
+        if (mysteriousSwitch == true) {// backdoor
             this->mPoints += 1;
+            mysteriousSwitch = false;
         }
 
         // Enemy Snake Control
@@ -445,20 +453,23 @@ void Game::runGame()
         }
         // Enemy Snake Move
         if (this->mPtrEnemySnake) {
-            bool enemytouchFood = this->mPtrEnemySnake->touchFood();
-            if (enemytouchFood) {
-                for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
-                    if (i->getPos() == this->mPtrEnemySnake->createNewHead()) {
-                        this->mFood.erase(i);
-                        break;
-                    }
-            }
-            this->mPtrEnemySnake->moveFoward(!(enemytouchFood || this->mPtrEnemySnake->mSnake.size() < this->mPtrEnemySnake->mInitialSnakeLength));
-            if (enemytouchFood) {
-                this->createRandomFood();
+            bool enemycollision = this->mPtrEnemySnake->checkCollision();
+            if (enemycollision) {
+                for (auto i : this->mPtrEnemySnake->mSnake)
+                    if (rand() % 5 != 0)
+                        this->mFood.push_back(Food(i, false));
                 this->mPtrSnake->senseFood(this->mFood);
-                this->mPtrEnemySnake->senseFood(this->mFood);
-                this->mPoints += 1;
+                this->mPtrEnemySnake.reset(nullptr);
+            }
+            else {
+                bool enemytouchFood = this->mPtrEnemySnake->touchFood();
+                bool enemyeatFood = enemytouchFood && this->eatFood(this->mPtrEnemySnake);
+                this->mPtrEnemySnake->moveFoward(!(enemytouchFood || this->mPtrEnemySnake->mSnake.size() < this->mPtrEnemySnake->mInitialSnakeLength));
+                if (enemyeatFood) {
+                    this->createRandomFood();
+                    this->mPtrSnake->senseFood(this->mFood);
+                    this->mPtrEnemySnake->senseFood(this->mFood);
+                }
             }
         }
 

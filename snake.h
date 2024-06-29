@@ -32,9 +32,12 @@ class Food
 {
 public:
     Food (SnakeBody Pos);
+    Food (SnakeBody Pos, bool flag);
     SnakeBody getPos() const;
+    bool isRealFood() const;
 private:
     SnakeBody mPos;
+    bool RealFood;
 };
 
 // Snake class should have no depency on the GUI library
@@ -52,7 +55,7 @@ public:
     // Check if the snake is dead
     bool hitWall();
     bool hitSnake(Snake *othersnake);
-    bool checkCollision();
+    virtual bool checkCollision();
 
     bool changeDirection(Direction newDirection);
     std::vector<SnakeBody>& getSnake();
