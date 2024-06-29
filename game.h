@@ -38,16 +38,17 @@ public:
     void renderPoints() const;
     void renderDifficulty() const;
     
-		void createRamdonFood();
+		void createRandomFood();
     void renderFood() const;
-    void renderSnake() const;
+    void renderSnake(const std::unique_ptr<Snake> &snake, int clr) const;
     void controlSnake() const;
     
 		void startGame();
     bool renderRestartMenu() const;
-    void adjustDelay();
+    void adjustDifficulty();
     
-
+    std::unique_ptr<Snake> mPtrSnake;
+    std::unique_ptr<Snake> mPtrEnemySnake = nullptr;
 private:
     // We need to have two windows
     // One is for game introduction
@@ -62,7 +63,6 @@ private:
     // Snake information
     const int mInitialSnakeLength = 2;
     const char mSnakeSymbol = '@';
-    std::unique_ptr<Snake> mPtrSnake;
     // Food information
     std::vector<Food> mFood;
     const char mFoodSymbol = '#';

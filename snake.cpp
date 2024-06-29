@@ -7,6 +7,8 @@
 
 #include <vector>
 
+class Game;
+
 
 SnakeBody::SnakeBody()
 {
@@ -35,8 +37,8 @@ const bool SnakeBody::operator == (const SnakeBody& snakeBody)
     return false;
 }
 
-Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength): mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength)
-{
+Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game):
+    mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength), thisgame(game) {
     this->initializeSnake();
     this->setRandomSeed();
 }
@@ -86,11 +88,11 @@ bool Snake::hitWall()
 /*
  * The snake head is overlapping with its body
  */
-bool Snake::hitSelf()
+bool Snake::hitSnake(Snake *othersnake)
 {
 	// check if the snake has hit itself.
     SnakeBody u = this->createNewHead();
-    if (this->isPartOfSnake(u.getX(), u.getY()))
+    if (othersnake->isPartOfSnake(u.getX(), u.getY()))
         return true;
     return false;
 }
@@ -164,19 +166,6 @@ void Snake::moveFoward(bool killTail)
         this->mSnake.pop_back();
 }
 
-bool Snake::checkCollision()
-{
-    if (this->hitWall() || this->hitSelf())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
 int Snake::getLength()
 {
     return this->mSnake.size();
@@ -186,3 +175,19 @@ Food::Food(SnakeBody Pos) : mPos(Pos) {};
 SnakeBody Food::getPos() const {
     return mPos;
 }
+
+// EnemySnake
+void EnemySnake::initializeSnake()
+{
+    // Instead of using a random initialization algorithm
+    // We always put the snake at the center of the game mWindows
+    int centerX = 1 + rand() % (this->mGameBoardWidth - 2),
+        centerY = 1 + rand() % (this->mGameBoardHeight - 2);
+    
+    this->mSnake.push_back(SnakeBody(centerX, centerY));
+    this->mDirection = Direction(rand() % 4);
+}
+EnemySnake::EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game *game): 
+    Snake(gameBoardWidth, gameBoardHeight, initialSnakeLength, game) {
+
+    }

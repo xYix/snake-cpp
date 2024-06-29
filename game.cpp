@@ -11,9 +11,12 @@
 
 #include "game.h"
 
+#define COLOR_36C48E 8
+
 #define FOOD_COLOR 1
 #define SNAKE_COLOR 2
 #define DEFAULT_COLOR 3
+#define ENEMY_SNAKE_COLOR 4
 
 Game::Game()
 {
@@ -26,9 +29,11 @@ Game::Game()
         exit(0);
     }
     start_color();
+    init_color(COLOR_36C48E, 211, 640, 555);
     init_pair(FOOD_COLOR, COLOR_RED, COLOR_BLACK);
-    init_pair(SNAKE_COLOR, COLOR_GREEN, COLOR_BLACK);
+    init_pair(SNAKE_COLOR, COLOR_36C48E, COLOR_BLACK);
     init_pair(DEFAULT_COLOR, COLOR_WHITE, COLOR_BLACK);
+    init_pair(ENEMY_SNAKE_COLOR, COLOR_BLUE, COLOR_BLACK);
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -222,7 +227,7 @@ void Game::renderDifficulty() const
 void Game::initializeGame()
 {
     // allocate memory for a new snake
-		this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength));
+	this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
 
     /* 
      * initialize the game pionts as zero
@@ -232,13 +237,13 @@ void Game::initializeGame()
      */
     this->mPoints = 0;
     for (int i = 0; i < this->mFoodCount; i++)
-        this->createRamdonFood();
+        this->createRandomFood();
     this->mPtrSnake->senseFood(this->mFood);
-    this->adjustDelay();
+    this->adjustDifficulty();
     // ...
 }
 
-void Game::createRamdonFood()
+void Game::createRandomFood()
 {
     /* 
      * create a food at random places
@@ -269,14 +274,14 @@ void Game::renderFood() const
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
 
-void Game::renderSnake() const
+void Game::renderSnake(const std::unique_ptr<Snake> &snake, int clr) const
 {
-    wattrset(this->mWindows[1], COLOR_PAIR(SNAKE_COLOR));
-    int snakeLength = this->mPtrSnake->getLength();
-    std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
+    wattrset(this->mWindows[1], COLOR_PAIR(clr));
+    int snakeLength = snake->getLength();
+    std::vector<SnakeBody>& snakebody = snake->getSnake();
     for (int i = 0; i < snakeLength; i ++)
     {
-        mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
+        mvwaddch(this->mWindows[1], snakebody[i].getY(), snakebody[i].getX(), this->mSnakeSymbol);
     }
     wrefresh(this->mWindows[1]);
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
@@ -347,13 +352,32 @@ void Game::renderBoards() const
 }
 
 
-void Game::adjustDelay()
+void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
-    if (mPoints % 5 == 0)
-    {
-        this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
+    this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
+    if (this->mDifficulty >= 2 && !this->mPtrEnemySnake) {
+	    this->mPtrEnemySnake.reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
     }
+}
+
+bool Snake::checkCollision()
+{
+    if (this->hitWall()) return true;
+    if (this->hitSnake(this)) return true;
+    if (this->thisgame->mPtrEnemySnake && this->hitSnake(this->thisgame->mPtrEnemySnake.get()))
+        return true;
+    return false;
+}
+
+bool EnemySnake::checkCollision()
+{
+    if (this->hitWall()) return true;
+    if (this->hitSnake(this)) return true;
+    if (this->thisgame->mPtrSnake && this->hitSnake(this->thisgame->mPtrSnake.get()))
+        return true;
+    return false;
+
 }
 
 void Game::runGame()
@@ -394,18 +418,20 @@ void Game::runGame()
         }
         this->mPtrSnake->moveFoward(!touchFood);
         if (touchFood) {
-            this->createRamdonFood();
+            this->createRandomFood();
             this->mPtrSnake->senseFood(this->mFood);
             this->mPoints += 1;
         }
 
-		this->renderSnake();
+		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
+        if (this->mPtrEnemySnake)
+            this->renderSnake(this->mPtrEnemySnake, ENEMY_SNAKE_COLOR);
         this->renderFood();
 
         box(this->mWindows[1], 0, 0);
         this->renderGameBoard();
 
-        this->adjustDelay();
+        this->adjustDifficulty();
         this->renderPoints();
         this->renderDifficulty();
         refresh();

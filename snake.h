@@ -3,6 +3,8 @@
 
 #include <vector>
 
+class Game;
+
 enum class Direction
 {
     Up = 0,
@@ -38,7 +40,7 @@ class Snake
 {
 public:
     //Snake();
-    Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength);
+    Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
     // Set random seed
     void setRandomSeed();
     // Initialize snake
@@ -49,7 +51,7 @@ public:
     bool touchFood();
     // Check if the snake is dead
     bool hitWall();
-    bool hitSelf();
+    bool hitSnake(Snake *othersnake);
     bool checkCollision();
 
     bool changeDirection(Direction newDirection);
@@ -58,14 +60,25 @@ public:
     SnakeBody createNewHead();
     void moveFoward(bool killTail);
 
-private:
+    Game *thisgame;
+
+    // i hate private
     const int mGameBoardWidth;
     const int mGameBoardHeight;
-    // Snake information
     const int mInitialSnakeLength;
+    // Snake information
     Direction mDirection;
     std::vector<Food> mFood;
     std::vector<SnakeBody> mSnake;
+private:
+};
+
+class EnemySnake : public Snake {
+public:
+    void initializeSnake();
+    EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
+    bool checkCollision();
+private:
 };
 
 #endif
