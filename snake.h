@@ -12,6 +12,8 @@ enum class Direction
     Left = 2,
     Right = 3,
 };
+Direction directionLeft(Direction dir);
+Direction directionRight(Direction dir);
 
 class SnakeBody
 {
@@ -41,10 +43,8 @@ class Snake
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
-    // Set random seed
-    void setRandomSeed();
     // Initialize snake
-    void initializeSnake();
+    virtual void initializeSnake();
     // Checking API for generating random food
     bool isPartOfSnake(int x, int y);
     void senseFood(const std::vector<Food> &food);
@@ -59,6 +59,8 @@ public:
     int getLength();
     SnakeBody createNewHead();
     void moveFoward(bool killTail);
+    
+    virtual void EnemySnakeAI();
 
     Game *thisgame;
 
@@ -78,6 +80,9 @@ public:
     void initializeSnake();
     EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
     bool checkCollision();
+    bool findFoodLine(Direction dir);
+    bool findFoodHalfPlane(Direction dir);
+    void EnemySnakeAI();
 private:
 };
 

@@ -20,6 +20,8 @@
 
 Game::Game()
 {
+    // set random seed
+    std::srand(std::time(nullptr));
     // Separate the screen to three windows
     this->mWindows.resize(3);
     initscr();
@@ -228,9 +230,12 @@ void Game::initializeGame()
 {
     // allocate memory for a new snake
 	this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
+    if (this->mPtrEnemySnake) {
+        this->mPtrEnemySnake.reset(nullptr);
+    }
 
     /* 
-     * initialize the game pionts as zero
+     * initialize the game points as zero
      * create a food at randome place
      * make the snake aware of the food
      * other initializations
@@ -351,13 +356,21 @@ void Game::renderBoards() const
     this->renderLeaderBoard();
 }
 
-
+void EnemySnake::initializeSnake()
+{
+    int centerX = 1 + rand() % (this->mGameBoardWidth - 2),
+        centerY = 1 + rand() % (this->mGameBoardHeight - 2);
+    
+    this->mSnake.push_back(SnakeBody(centerX, centerY));
+    this->mDirection = Direction(rand() % 4);
+}
 void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
     this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
-    if (this->mDifficulty >= 2 && !this->mPtrEnemySnake) {
+    if (this->mDifficulty >= 1 && !this->mPtrEnemySnake) {
 	    this->mPtrEnemySnake.reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
+        this->mPtrEnemySnake->senseFood(this->mFood);
     }
 }
 
@@ -386,27 +399,28 @@ void Game::runGame()
     int key;
     while (true)
     {
-				/* TODO 
-				 * this is the main control loop of the game.
-				 * it keeps running a while loop, and does the following things:
-				 * 	1. process your keyboard input
-				 * 	2. clear the window
-				 * 	3. move the current snake forward
-				 * 	4. check if the snake has eaten the food after movement
-				 * 	5. check if the snake dies after the movement
-				 * 	6. make corresponding steps for the ``if conditions'' in 3 and 4.
-				 *   7. render the position of the food and snake in the new frame of window. 
-				 *   8. update other game states and refresh the window
-				 */
+        /* TODO 
+         * this is the main control loop of the game.
+         * it keeps running a while loop, and does the following things:
+         * 	1. process your keyboard input
+         * 	2. clear the window
+         * 	3. move the current snake forward
+         * 	4. check if the snake has eaten the food after movement
+         * 	5. check if the snake dies after the movement
+         * 	6. make corresponding steps for the ``if conditions'' in 3 and 4.
+         *   7. render the position of the food and snake in the new frame of window. 
+         *   8. update other game states and refresh the window
+         */
         this->controlSnake();
         this->createGameBoard();
+
+        // Snake Move
         bool touchFood = this->mPtrSnake->touchFood();
-        bool collision = this->mPtrSnake->checkCollision();
+        bool collision = this->mPtrSnake->checkCollision(); // backdoor
         if (mysteriousSwitch == true) {
             touchFood = true;
             mysteriousSwitch = false;
         }
-
         if (collision)
             break;
         if (touchFood) {
@@ -420,7 +434,32 @@ void Game::runGame()
         if (touchFood) {
             this->createRandomFood();
             this->mPtrSnake->senseFood(this->mFood);
+            if (this->mPtrEnemySnake)
+                this->mPtrEnemySnake->senseFood(this->mFood);
             this->mPoints += 1;
+        }
+
+        // Enemy Snake Control
+        if (this->mPtrEnemySnake) {
+            this->mPtrEnemySnake->EnemySnakeAI();
+        }
+        // Enemy Snake Move
+        if (this->mPtrEnemySnake) {
+            bool enemytouchFood = this->mPtrEnemySnake->touchFood();
+            if (enemytouchFood) {
+                for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
+                    if (i->getPos() == this->mPtrEnemySnake->createNewHead()) {
+                        this->mFood.erase(i);
+                        break;
+                    }
+            }
+            this->mPtrEnemySnake->moveFoward(!(enemytouchFood || this->mPtrEnemySnake->mSnake.size() < this->mPtrEnemySnake->mInitialSnakeLength));
+            if (enemytouchFood) {
+                this->createRandomFood();
+                this->mPtrSnake->senseFood(this->mFood);
+                this->mPtrEnemySnake->senseFood(this->mFood);
+                this->mPoints += 1;
+            }
         }
 
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);

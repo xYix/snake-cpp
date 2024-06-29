@@ -9,6 +9,29 @@
 
 class Game;
 
+// Direction
+
+Direction directionLeft(Direction dir) {
+    if (dir == Direction::Up) return Direction::Left;
+    if (dir == Direction::Down) return Direction::Right;
+    if (dir == Direction::Left) return Direction::Down;
+    if (dir == Direction::Right) return Direction::Up;
+}
+Direction directionRight(Direction dir) {
+    if (dir == Direction::Up) return Direction::Right;
+    if (dir == Direction::Down) return Direction::Left;
+    if (dir == Direction::Left) return Direction::Up;
+    if (dir == Direction::Right) return Direction::Down;
+}
+
+// Food
+
+Food::Food(SnakeBody Pos) : mPos(Pos) {};
+SnakeBody Food::getPos() const {
+    return mPos;
+}
+
+// SnakeBody
 
 SnakeBody::SnakeBody()
 {
@@ -37,16 +60,11 @@ const bool SnakeBody::operator == (const SnakeBody& snakeBody)
     return false;
 }
 
+// Snake
+
 Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game):
     mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength), thisgame(game) {
     this->initializeSnake();
-    this->setRandomSeed();
-}
-
-void Snake::setRandomSeed()
-{
-    // use current time as seed for random generator
-    std::srand(std::time(nullptr));
 }
 
 void Snake::initializeSnake()
@@ -171,23 +189,80 @@ int Snake::getLength()
     return this->mSnake.size();
 }
 
-Food::Food(SnakeBody Pos) : mPos(Pos) {};
-SnakeBody Food::getPos() const {
-    return mPos;
+void Snake::EnemySnakeAI()
+{
+    // do nothing
 }
 
 // EnemySnake
-void EnemySnake::initializeSnake()
-{
-    // Instead of using a random initialization algorithm
-    // We always put the snake at the center of the game mWindows
-    int centerX = 1 + rand() % (this->mGameBoardWidth - 2),
-        centerY = 1 + rand() % (this->mGameBoardHeight - 2);
-    
-    this->mSnake.push_back(SnakeBody(centerX, centerY));
-    this->mDirection = Direction(rand() % 4);
-}
 EnemySnake::EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game *game): 
     Snake(gameBoardWidth, gameBoardHeight, initialSnakeLength, game) {
-
+        this->mSnake.clear();
+        this->initializeSnake();
     }
+
+bool EnemySnake::findFoodLine(Direction dir) {
+    SnakeBody curHead = this->mSnake[0];
+    for (Food &i : this->mFood) {
+        SnakeBody pos = i.getPos();
+        switch (dir) {
+            case Direction::Up:
+                if (pos.getX() == curHead.getX() && pos.getY() < curHead.getY())
+                    return true;
+                break;
+            case Direction::Down:
+                if (pos.getX() == curHead.getX() && pos.getY() > curHead.getY())
+                    return true;
+                break;
+            case Direction::Left:
+                if (pos.getY() == curHead.getY() && pos.getX() < curHead.getX())
+                    return true;
+                break;
+            case Direction::Right:
+                if (pos.getY() == curHead.getY() && pos.getX() > curHead.getX())
+                    return true;
+                break;
+        }
+    }
+    return false;
+}
+bool EnemySnake::findFoodHalfPlane(Direction dir) {
+    SnakeBody curHead = this->mSnake[0];
+    for (Food &i : this->mFood) {
+        SnakeBody pos = i.getPos();
+        switch (dir) {
+            case Direction::Up:
+                if (pos.getY() < curHead.getY())
+                    return true;
+                break;
+            case Direction::Down:
+                if (pos.getY() > curHead.getY())
+                    return true;
+                break;
+            case Direction::Left:
+                if (pos.getX() < curHead.getX())
+                    return true;
+                break;
+            case Direction::Right:
+                if (pos.getX() > curHead.getX())
+                    return true;
+                break;
+        }
+    }
+    return false;
+}
+void EnemySnake::EnemySnakeAI() {
+    if (this->findFoodLine(this->mDirection)) return;
+    Direction L = directionLeft(this->mDirection),
+              R = directionRight(this->mDirection);
+    if (this->findFoodLine(L)) {
+        this->mDirection = L;
+        return;
+    }
+    if (this->findFoodLine(R)) {
+        this->mDirection = R;
+        return;
+    }
+    if (!this->findFoodHalfPlane(this->mDirection))
+        this->mDirection = L;
+}
