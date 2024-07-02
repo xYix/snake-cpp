@@ -55,7 +55,7 @@ public:
     // Check if the snake is dead
     bool hitWall();
     bool hitSnake(Snake *othersnake);
-    virtual bool checkCollision();
+    bool checkCollision();
 
     bool changeDirection(Direction newDirection);
     std::vector<SnakeBody>& getSnake();
@@ -82,7 +82,7 @@ class EnemySnake : public Snake {
 public:
     void initializeSnake();
     EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
-    bool checkCollision();
+    // bool checkCollision();
     bool findFoodLine(Direction dir);
     bool findFoodHalfPlane(Direction dir);
     void EnemySnakeAI();

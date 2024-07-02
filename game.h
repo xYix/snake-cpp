@@ -47,10 +47,11 @@ public:
     bool renderRestartMenu() const;
     void adjustDifficulty();
 
+    void allSnakeSenseFood();
     bool eatFood(const std::unique_ptr<Snake> &snake);
     
     std::unique_ptr<Snake> mPtrSnake;
-    std::unique_ptr<Snake> mPtrEnemySnake = nullptr;
+    std::vector<std::unique_ptr<Snake> > mPtrEnemySnake;
 private:
     // We need to have two windows
     // One is for game introduction
@@ -77,6 +78,7 @@ private:
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
+    const int mNumEnemySnake = 2;
 };
 
 #endif
