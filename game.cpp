@@ -368,7 +368,7 @@ void EnemySnake::initializeSnake()
 void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
-    this->mDelay = this->mBaseDelay * pow(0.75, this->mDifficulty);
+    this->mDelay = this->mBaseDelay * pow(0.90, this->mDifficulty);
     if (this->mDifficulty >= 2 && !this->mPtrEnemySnake) {
 	    this->mPtrEnemySnake.reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
         this->mPtrEnemySnake->senseFood(this->mFood);
