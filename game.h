@@ -30,21 +30,23 @@ public:
     bool updateLeaderBoard();
     bool writeLeaderBoard();
     void renderLeaderBoard() const;
-    
+    bool renderRestartMenu() const;
+
 		void renderBoards() const;
-    
-		void initializeGame();
-    void runGame();
+
+    void renderFood() const;
+    void renderSnake(const std::unique_ptr<Snake> &snake, int clr) const;
+
     void renderPoints() const;
     void renderDifficulty() const;
     
+		void initializeGame();
+    void runGame();
+    
 		void createRandomFood();
-    void renderFood() const;
-    void renderSnake(const std::unique_ptr<Snake> &snake, int clr) const;
     void controlSnake() const;
     
 		void startGame();
-    bool renderRestartMenu() const;
     void adjustDifficulty();
 
     void allSnakeSenseFood();
