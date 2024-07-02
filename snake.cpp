@@ -257,13 +257,13 @@ bool EnemySnake::findFoodHalfPlane(Direction dir) {
     return false;
 }
 void EnemySnake::EnemySnakeAI() {
-    this->SnakeAI_Greed();
-    this->SnakeAI_NoHitSelf();
-}
-void EnemySnake::SnakeAI_Greed() {
     Direction F = this->mDirection,
               L = directionLeft(this->mDirection),
               R = directionRight(this->mDirection);
+    this->SnakeAI_Greed(F, L, R);
+    this->SnakeAI_NoHitSelf(F, L, R);
+}
+void EnemySnake::SnakeAI_Greed(Direction F, Direction L, Direction R) {
     if (this->findFoodLine(this->mDirection)) return;
     if (this->findFoodLine(L)) {
         this->mDirection = L;
@@ -276,10 +276,7 @@ void EnemySnake::SnakeAI_Greed() {
     if (!this->findFoodHalfPlane(this->mDirection))
         this->mDirection = L;
 }
-void EnemySnake::SnakeAI_NoHitSelf() {
-    Direction F = this->mDirection,
-              L = directionLeft(this->mDirection),
-              R = directionRight(this->mDirection);
+void EnemySnake::SnakeAI_NoHitSelf(Direction F, Direction L, Direction R) {
     if (this->hitSnake(this) || this->hitWall()) {
         this->mDirection = L;
         if (!this->hitSnake(this) && !this->hitWall()) return;

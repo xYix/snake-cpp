@@ -86,8 +86,8 @@ public:
     bool findFoodLine(Direction dir);
     bool findFoodHalfPlane(Direction dir);
     void EnemySnakeAI();
-    void SnakeAI_Greed();
-    void SnakeAI_NoHitSelf();
+    void SnakeAI_Greed(Direction F, Direction L, Direction R);
+    void SnakeAI_NoHitSelf(Direction F, Direction L, Direction R);
 private:
 };
 
