@@ -80,7 +80,7 @@ private:
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
-    const int mNumEnemySnake = 2;
+    const int mNumEnemySnake = 5;
 };
 
 #endif

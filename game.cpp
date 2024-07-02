@@ -48,6 +48,8 @@ void Game::createRandomFood()
         x = 1 + rand() % (this->mGameBoardWidth - 2),
         y = 1 + rand() % (this->mGameBoardHeight - 2);
         if (this->mPtrSnake->isPartOfSnake(x, y)) continue;
+        for (auto &s : this->mPtrEnemySnake)
+            if (s && s ->isPartOfSnake(x, y)) continue;
         for (const Food &i : this->mFood)
             if (i.getPos() == SnakeBody(x, y))
                 continue;
@@ -123,15 +125,12 @@ void EnemySnake::initializeSnake()
 void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
-    this->mDelay = this->mBaseDelay * pow(0.90, this->mDifficulty);
-    if (this->mDifficulty >= 2 && !this->mPtrEnemySnake[0]) {
-	    this->mPtrEnemySnake[0].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
-        this->mPtrEnemySnake[0]->senseFood(this->mFood);
-    }
-    if (this->mDifficulty >= 4 && !this->mPtrEnemySnake[1]) {
-	    this->mPtrEnemySnake[1].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
-        this->mPtrEnemySnake[1]->senseFood(this->mFood);
-    }
+    this->mDelay = this->mBaseDelay * pow(0.92, this->mDifficulty);
+    for (int i = 0; i < this->mNumEnemySnake; i++)
+        if (this->mDifficulty >= 1 + 2 * i && !this->mPtrEnemySnake[i]) {
+            this->mPtrEnemySnake[i].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
+            this->mPtrEnemySnake[i]->senseFood(this->mFood);
+        }
 }
 
 bool Snake::checkCollision()
