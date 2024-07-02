@@ -107,7 +107,7 @@ bool Snake::hitWall()
 }
 
 /*
- * The snake head is overlapping with its body
+ * The snake head is overlapping with othersnake's body
  */
 bool Snake::hitSnake(Snake *othersnake)
 {
@@ -118,7 +118,9 @@ bool Snake::hitSnake(Snake *othersnake)
     return false;
 }
 
-
+/*
+ * The snake head is touching food
+ */
 bool Snake::touchFood()
 {
     SnakeBody newHead = this->createNewHead();
@@ -255,9 +257,14 @@ bool EnemySnake::findFoodHalfPlane(Direction dir) {
     return false;
 }
 void EnemySnake::EnemySnakeAI() {
-    if (this->findFoodLine(this->mDirection)) return;
-    Direction L = directionLeft(this->mDirection),
+    this->SnakeAI_Greed();
+    this->SnakeAI_NoHitSelf();
+}
+void EnemySnake::SnakeAI_Greed() {
+    Direction F = this->mDirection,
+              L = directionLeft(this->mDirection),
               R = directionRight(this->mDirection);
+    if (this->findFoodLine(this->mDirection)) return;
     if (this->findFoodLine(L)) {
         this->mDirection = L;
         return;
@@ -268,4 +275,17 @@ void EnemySnake::EnemySnakeAI() {
     }
     if (!this->findFoodHalfPlane(this->mDirection))
         this->mDirection = L;
+}
+void EnemySnake::SnakeAI_NoHitSelf() {
+    Direction F = this->mDirection,
+              L = directionLeft(this->mDirection),
+              R = directionRight(this->mDirection);
+    if (this->hitSnake(this) || this->hitWall()) {
+        this->mDirection = L;
+        if (!this->hitSnake(this) && !this->hitWall()) return;
+        this->mDirection = R;
+        if (!this->hitSnake(this) && !this->hitWall()) return;
+        this->mDirection = F; // gg
+        return;
+    }
 }

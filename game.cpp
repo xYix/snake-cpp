@@ -24,7 +24,7 @@ void Game::initializeGame()
 
     /* 
      * initialize the game points as zero
-     * create a food at randome place
+     * create a food at random place
      * make the snake aware of the food
      * other initializations
      */
@@ -44,16 +44,18 @@ void Game::createRandomFood()
      * make sure that the food doesn't overlap with the snake.
      */
     int x, y;
-    while (true) {
+    bool flag = true;
+    while (flag) {
         x = 1 + rand() % (this->mGameBoardWidth - 2),
         y = 1 + rand() % (this->mGameBoardHeight - 2);
         if (this->mPtrSnake->isPartOfSnake(x, y)) continue;
         for (auto &s : this->mPtrEnemySnake)
-            if (s && s ->isPartOfSnake(x, y)) continue;
+            if (s && s->isPartOfSnake(x, y)) continue;
+        flag = false;
         for (const Food &i : this->mFood)
-            if (i.getPos() == SnakeBody(x, y))
-                continue;
-        break;
+            if (i.getPos() == SnakeBody(x, y)) {
+                flag = true; break;
+            }
     }
     /*
     ? When whole screen is fully occupied by snake
@@ -116,8 +118,19 @@ void Game::controlSnake() const
 
 void EnemySnake::initializeSnake()
 {
-    int centerX = 1 + rand() % (this->mGameBoardWidth - 2),
+    int centerX, centerY;
+    bool flag = true;
+    while (flag) {
+        centerX = 1 + rand() % (this->mGameBoardWidth - 2),
         centerY = 1 + rand() % (this->mGameBoardHeight - 2);
+        if (this->thisgame->mPtrSnake->isPartOfSnake(centerX, centerY)) continue;
+        for (auto &s : this->thisgame->mPtrEnemySnake)
+            if (s && s->isPartOfSnake(centerX, centerY)) continue;
+        flag = false;
+        for (Food i : this->mFood)
+            if (i.getPos() == SnakeBody(centerX, centerY))
+                { flag = true; break; }
+    }
     
     this->mSnake.push_back(SnakeBody(centerX, centerY));
     this->mDirection = Direction(rand() % 4);
@@ -125,7 +138,7 @@ void EnemySnake::initializeSnake()
 void Game::adjustDifficulty()
 {
     this->mDifficulty = this->mPoints / 5;
-    this->mDelay = this->mBaseDelay * pow(0.92, this->mDifficulty);
+    this->mDelay = this->mBaseDelay /* * pow(0.92, this->mDifficulty)*/;
     for (int i = 0; i < this->mNumEnemySnake; i++)
         if (this->mDifficulty >= 1 + 2 * i && !this->mPtrEnemySnake[i]) {
             this->mPtrEnemySnake[i].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
@@ -188,7 +201,7 @@ void Game::runGame()
             break; // die
         bool touchFood = this->mPtrSnake->touchFood();
         bool eatFood = touchFood && this->eatFood(this->mPtrSnake);
-        if (!mysteriousSwitchZ)
+        if (!mysteriousSwitchZ) // backdoor
             this->mPtrSnake->moveFoward(!(touchFood || mysteriousSwitchX));
         if (touchFood) {
             this->mPoints += 1;
@@ -197,7 +210,7 @@ void Game::runGame()
             this->createRandomFood();
             this->allSnakeSenseFood();
         }
-        if (mysteriousSwitchX == true) {// backdoor
+        if (mysteriousSwitchX == true) { // backdoor
             this->mPoints += 1;
             mysteriousSwitchX = false;
         }
