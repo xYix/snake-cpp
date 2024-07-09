@@ -11,6 +11,8 @@
 
 class Game
 {
+    friend class Snake;
+    friend class EnemySnake;
 public:
     Game();
     ~Game();
@@ -22,10 +24,10 @@ public:
     void createGameBoard();
     void renderGameBoard() const;
     
-		void createInstructionBoard();
+	void createInstructionBoard();
     void renderInstructionBoard() const;
 		
-		void loadLeadBoard();
+	void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
     bool updateLeaderBoard();
@@ -33,7 +35,7 @@ public:
     void renderLeaderBoard() const;
     bool renderRestartMenu() const;
 
-		void renderBoards() const;
+	void renderBoards() const;
 
     void renderFood() const;
     void renderSnake(const std::unique_ptr<Snake> &snake, int clr) const;
@@ -41,21 +43,20 @@ public:
     void renderPoints() const;
     void renderDifficulty() const;
     
-		void initializeGame();
+	void initializeGame();
     void runGame();
     
-		void createRandomFood();
+	void createRandomFood();
     void controlSnake() const;
     
-		void startGame();
+	void startGame();
     void adjustDifficulty();
 
     void allSnakeSenseFood();
     bool eatFood(const std::unique_ptr<Snake> &snake);
-    
+private:
     std::unique_ptr<Snake> mPtrSnake;
     std::vector<std::unique_ptr<Snake> > mPtrEnemySnake;
-private:
     // We need to have two windows
     // One is for game introduction
     // One is for game mWindows

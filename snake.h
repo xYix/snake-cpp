@@ -43,6 +43,8 @@ private:
 // Snake class should have no depency on the GUI library
 class Snake
 {
+    friend class Game;
+    friend class EnemySnake;
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
@@ -64,7 +66,7 @@ public:
     void moveFoward(bool killTail);
     
     virtual void EnemySnakeAI();
-
+private:
     Game *thisgame;
 
     // i hate private
@@ -75,10 +77,11 @@ public:
     Direction mDirection;
     std::vector<Food> mFood;
     std::vector<SnakeBody> mSnake;
-private:
 };
 
 class EnemySnake : public Snake {
+    friend class Game;
+    friend class Snake;
 public:
     void initializeSnake();
     EnemySnake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);
