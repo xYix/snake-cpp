@@ -55,7 +55,7 @@ int SnakeBody::getY() const
     return mY;
 }
 
-const bool SnakeBody::operator == (const SnakeBody& snakeBody)
+bool SnakeBody::operator == (const SnakeBody& snakeBody) const
 {
     // overload the == operator for SnakeBody comparision.
     if (this->getX() == snakeBody.getX() && this->getY() == snakeBody.getY())

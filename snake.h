@@ -22,7 +22,7 @@ public:
     SnakeBody(int x, int y);
     int getX() const;
     int getY() const;
-    const bool operator == (const SnakeBody& snakeBody);
+    bool operator == (const SnakeBody& snakeBody) const;
 private:
     int mX;
     int mY;
@@ -45,6 +45,7 @@ class Snake
 {
     friend class Game;
     friend class EnemySnake;
+    friend class BossSnake;
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, Game* game);

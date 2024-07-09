@@ -21,6 +21,7 @@ void Game::initializeGame()
 	this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
     for (auto &s : this->mPtrEnemySnake)
         s.reset(nullptr);
+    this->mBossSnake.reset(nullptr);
 
     /* 
      * initialize the game points as zero
@@ -158,6 +159,9 @@ void Game::adjustDifficulty()
         this->allSnakeSenseFood();
         this->animationTick = 0;
     }
+    if (this->mDifficulty == 6 && this->animationTick == 50) {
+        this->mBossSnake.reset(new BossSnake(this->mGameBoardWidth, this->mGameBoardHeight, this));
+    }
 }
 
 bool Snake::checkCollision()
@@ -233,7 +237,6 @@ void Game::runGame()
         for (auto &s : this->mPtrEnemySnake) if (s)
             s->EnemySnakeAI();
         // Enemy Snake Move
-        
         for (auto &s : this->mPtrEnemySnake) if (s) {
             bool enemycollision = s->checkCollision();
             if (enemycollision) {
@@ -253,9 +256,17 @@ void Game::runGame()
             }
         }
 
+        // Boss Onstage
+        if (this->animationTick > 50 && this->animationTick <= 170 && this->animationTick % 7 == 0) {
+            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
+            p->moveForward();
+            // ->moveFoward();
+        }
+
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
-        for (auto &s : this->mPtrEnemySnake) if (s)
+        for (auto &s : this->mPtrEnemySnake)
             this->renderSnake(s, ENEMY_SNAKE_COLOR);
+        this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
         this->renderFood();
 
         box(this->mWindows[1], 0, 0);
@@ -265,8 +276,9 @@ void Game::runGame()
         this->renderPoints();
         this->renderDifficulty();
 
-        if (this->animationTick >= 0 && this->animationTick <= 50)
-            this->renderInformationBoard_warning();
+        if (this->animationTick >= 0)
+            this->renderInformationBoard_warning(),
+            this->animationTick++;
         refresh();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));

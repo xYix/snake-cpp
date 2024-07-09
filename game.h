@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "snake.h"
-
+#include "boss.h"
 
 class Game
 {
@@ -57,6 +57,7 @@ public:
 private:
     std::unique_ptr<Snake> mPtrSnake;
     std::vector<std::unique_ptr<Snake> > mPtrEnemySnake;
+    std::unique_ptr<Snake> mBossSnake;
     // We need to have two windows
     // One is for game introduction
     // One is for game mWindows

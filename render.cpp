@@ -86,7 +86,7 @@ void Game::renderInformationBoard_warning()
         box(this->mWindows[0], 0, 0);
     }
     if (this->animationTick >= 0 && this->animationTick < 50) {
-        if ((this->animationTick++) % 10 < 5)
+        if (this->animationTick % 10 < 5)
             wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         else 
             wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
@@ -97,7 +97,6 @@ void Game::renderInformationBoard_warning()
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
     if (this->animationTick >= 50 && this->animationTick <= 75) {
-        this->animationTick++;
         wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
         mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
@@ -262,6 +261,7 @@ void Game::renderFood() const
 
 void Game::renderSnake(const std::unique_ptr<Snake> &snake, int clr) const
 {
+    if (!snake) return;
     wattrset(this->mWindows[1], COLOR_PAIR(clr));
     int snakeLength = snake->getLength();
     std::vector<SnakeBody>& snakebody = snake->getSnake();
