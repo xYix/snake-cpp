@@ -272,6 +272,20 @@ void Game::renderSnake(const std::unique_ptr<Snake> &snake, int clr) const
     wrefresh(this->mWindows[1]);
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
+void Game::renderBulletSnake(const BossSnake* master, int clr) const {
+    
+    wattrset(this->mWindows[1], COLOR_PAIR(clr));
+    for (auto &s : master->mBullet) {
+        int snakeLength = s->getLength();
+        std::vector<SnakeBody>& snakebody = s->getSnake();
+        for (int i = 0; i < snakeLength; i ++)
+        {
+            mvwaddch(this->mWindows[1], snakebody[i].getY(), snakebody[i].getX(), this->mSnakeSymbol);
+        }
+    }
+    wrefresh(this->mWindows[1]);
+    wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
+}
 
 void Game::renderBoards() const
 {

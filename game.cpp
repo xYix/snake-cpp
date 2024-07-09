@@ -173,8 +173,14 @@ bool Snake::checkCollision()
             return true;
     if (this->hitSnake(this->thisgame->mPtrSnake.get()))
         return true;
-    if (this->thisgame->mBossSnake && this->hitSnake(this->thisgame->mBossSnake.get()))
-        return true;
+    if (this->thisgame->mBossSnake) {
+        if (this->hitSnake(this->thisgame->mBossSnake.get()))
+            return true;
+        BossSnake *p = dynamic_cast<BossSnake*>(this->thisgame->mBossSnake.get());
+        for (auto &s : p->mBullet)
+            if (this->hitSnake(s))
+                return true;
+    }
     return false;
 }
 
@@ -222,7 +228,7 @@ void Game::runGame()
         bool touchFood = this->mPtrSnake->touchFood();
         bool eatFood = touchFood && this->eatFood(this->mPtrSnake);
         if (!mysteriousSwitchZ) // backdoor
-            this->mPtrSnake->moveFoward(!(touchFood || mysteriousSwitchX));
+            this->mPtrSnake->moveForward(!(touchFood || mysteriousSwitchX));
         if (touchFood) {
             this->mPoints += 1;
         }
@@ -251,7 +257,7 @@ void Game::runGame()
             }
             bool enemytouchFood = s->touchFood();
             bool enemyeatFood = enemytouchFood && this->eatFood(s);
-            s->moveFoward(!(enemytouchFood || s->mSnake.size() < s->mInitialSnakeLength));
+            s->moveForward(!(enemytouchFood || s->mSnake.size() < s->mInitialSnakeLength));
             if (enemyeatFood) {
                 this->createRandomFood();
                 this->allSnakeSenseFood();
@@ -261,14 +267,23 @@ void Game::runGame()
         // Boss Onstage
         if (this->animationTick > 50 && this->animationTick <= 170 && this->animationTick % 7 == 0) {
             BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
-            p->moveForward();
-            // ->moveFoward();
+            p->onstageAnimation();
+        }
+        if (this->mBossSnake && this->animationTick > 170) {
+            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
+            if (animationTick % 5 == 0)
+                p->summonBullet();
+            p->allBulletForward();
         }
 
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
         for (auto &s : this->mPtrEnemySnake)
             this->renderSnake(s, ENEMY_SNAKE_COLOR);
         this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
+        if (this->mBossSnake) {
+            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
+            this->renderBulletSnake(p, DEFAULT_COLOR);
+        }
         this->renderFood();
 
         box(this->mWindows[1], 0, 0);

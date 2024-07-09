@@ -45,6 +45,7 @@ class Snake
 {
     friend class Game;
     friend class EnemySnake;
+    friend class BulletSnake;
     friend class BossSnake;
 public:
     //Snake();
@@ -64,7 +65,7 @@ public:
     std::vector<SnakeBody>& getSnake();
     int getLength();
     SnakeBody createNewHead();
-    void moveFoward(bool killTail);
+    void moveForward(bool killTail);
     
     virtual void EnemySnakeAI();
 private:

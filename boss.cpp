@@ -1,18 +1,81 @@
+#include <cmath>
 #include "boss.h"
 
-BossSnake::BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game):
-    Snake(gameBoardWidth, gameBoardHeight, 0, game)
+BulletSnake::BulletSnake(BossSnake *master):
+    Snake(master->mGameBoardWidth, master->mGameBoardHeight, master->mInitialBulletLength, master->thisgame), 
+    mMaster(master),
+    innerClock(0),
+    posX(0),
+    posY(0)
 {
     this->mSnake.clear();
-    for (int i = -3; i <= 3; i++)
+    while (true) {
+        this->posY = 1 + rand() % (this->mGameBoardHeight - 2);
+        if (this->posY >= this->mGameBoardHeight / 2 - this->mMaster->mHalfWidth &&
+            this->posY <= this->mGameBoardHeight / 2 + this->mMaster->mHalfWidth )
+            continue;
+        break;
+    }
+    this->posY += 0.1; // avoid float error
+}
+void BulletSnake::moveForward() {
+    this->innerClock++;
+    this->posX = (1.0 - (this->innerClock * this->innerClock) / 2500.0) * (this->mGameBoardWidth + this->mInitialSnakeLength);
+}
+void BulletSnake::materialization() {
+    int trueX = int(this->posX),
+        trueY = int(this->posY);
+    
+    this->mSnake.clear();
+    for (int i = 0; i < this->mInitialSnakeLength; i++) {
+        if (trueX + i >= 1 && trueX + i < this->mGameBoardWidth - 1 && 
+            trueY >= 1 && trueY < this->mGameBoardHeight - 1)
+                this->mSnake.push_back(SnakeBody(trueX + i, trueY));
+    }
+}
+
+BossSnake::BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game):
+    Snake(gameBoardWidth, gameBoardHeight, 0, game),
+    mHealth(this->mMaxHealth)
+{
+    this->mSnake.clear();
+    for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
         this->mSnake.push_back(SnakeBody(this->mGameBoardWidth - 2, this->mGameBoardHeight / 2 + i));
+    this->mBullet.clear();
+    // this->mHealth = this->mMaxHealth;
 }
 
 int BossSnake::getLength() const {
     return this->mSnake.size() / 7;
 }
-void BossSnake::moveForward() {
+void BossSnake::onstageAnimation() {
     int beforeLength = this->getLength();
-    for (int i = -3; i <= 3; i++)
+    for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
         this->mSnake.push_back(SnakeBody(this->mGameBoardWidth - beforeLength - 2, this->mGameBoardHeight / 2 + i));
+}
+
+void BossSnake::summonBullet() {
+    this->mBullet.push_back(new BulletSnake(this));
+}
+void BossSnake::allBulletForward() {
+    for (auto &i : this->mBullet) {
+        i->moveForward();
+        i->materialization();
+    }
+    std::vector<BulletSnake*>::iterator i = this->mBullet.begin();
+    while (i != this->mBullet.end()) {
+        if ((*i)->innerClock > 50) {
+            delete *i;
+            i = this->mBullet.erase(i);
+        }
+        else
+            i++;
+    }
+}
+
+BossSnake::~BossSnake()
+{
+    for (auto &i : this->mBullet)
+        delete i;
+    this->mBullet.clear();
 }

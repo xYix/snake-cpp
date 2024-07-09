@@ -178,7 +178,7 @@ SnakeBody Snake::createNewHead()
 /*
  * If eat food, return true, otherwise return false
  */
-void Snake::moveFoward(bool killTail)
+void Snake::moveForward(bool killTail)
 {
     /* 
 	 * move the snake forward. 
