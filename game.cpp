@@ -173,6 +173,8 @@ bool Snake::checkCollision()
             return true;
     if (this->hitSnake(this->thisgame->mPtrSnake.get()))
         return true;
+    if (this->thisgame->mBossSnake && this->hitSnake(this->thisgame->mBossSnake.get()))
+        return true;
     return false;
 }
 
