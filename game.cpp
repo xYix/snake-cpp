@@ -29,11 +29,13 @@ void Game::initializeGame()
      * other initializations
      */
     this->mPoints = 0;
+    this->mDifficulty = 0;
     this->mFood.clear();
     for (int i = 0; i < this->mFoodCount; i++)
         this->createRandomFood();
     this->mPtrSnake->senseFood(this->mFood);
     this->adjustDifficulty();
+    this->animationTick = -1;
     // ...
 }
 
@@ -137,13 +139,25 @@ void EnemySnake::initializeSnake()
 }
 void Game::adjustDifficulty()
 {
-    this->mDifficulty = this->mPoints / 5;
-    this->mDelay = this->mBaseDelay /* * pow(0.92, this->mDifficulty)*/;
+    if (this->mPoints >= 2) this->mDifficulty = 1;
+    if (this->mPoints >= 5) this->mDifficulty = 2;
+    if (this->mPoints >= 10) this->mDifficulty = 3;
+    if (this->mPoints >= 18) this->mDifficulty = 4;
+    if (this->mPoints >= 31) this->mDifficulty = 5;
+    if (this->mPoints >= 50) this->mDifficulty = 6;
+    this->mDelay = this->mBaseDelay;
     for (int i = 0; i < this->mNumEnemySnake; i++)
-        if (this->mDifficulty >= 1 + 2 * i && !this->mPtrEnemySnake[i]) {
+        if (this->mDifficulty >= 1 + i && this->mDifficulty < 6 && !this->mPtrEnemySnake[i]) {
             this->mPtrEnemySnake[i].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
             this->mPtrEnemySnake[i]->senseFood(this->mFood);
         }
+    if (this->mDifficulty == 6 && this->animationTick == -1) {
+        for (auto &i : this->mPtrEnemySnake)
+            i.reset(nullptr);
+        this->mFood.clear();
+        this->allSnakeSenseFood();
+        this->animationTick = 0;
+    }
 }
 
 bool Snake::checkCollision()
@@ -250,6 +264,9 @@ void Game::runGame()
         this->adjustDifficulty();
         this->renderPoints();
         this->renderDifficulty();
+
+        if (this->animationTick >= 0 && this->animationTick <= 50)
+            this->renderInformationBoard_warning();
         refresh();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));

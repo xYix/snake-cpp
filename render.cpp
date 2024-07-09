@@ -74,10 +74,37 @@ void Game::createInformationBoard()
 void Game::renderInformationBoard() const
 {
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
-    mvwprintw(this->mWindows[0], 2, 1, "This is a mock version.");
-    mvwprintw(this->mWindows[0], 3, 1, "Please fill in the blanks to make it work properly!!");
-    mvwprintw(this->mWindows[0], 4, 1, "Implemented using C++ and libncurses library.");
+    mvwprintw(this->mWindows[0], 2, 1, "");
+    mvwprintw(this->mWindows[0], 3, 1, "");
+    mvwprintw(this->mWindows[0], 4, 1, "");
     wrefresh(this->mWindows[0]);
+}
+void Game::renderInformationBoard_warning()
+{
+    if (this->animationTick == 0 || this->animationTick == 50) {
+        this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, 0, 0);
+        box(this->mWindows[0], 0, 0);
+    }
+    if (this->animationTick >= 0 && this->animationTick < 50) {
+        if ((this->animationTick++) % 10 < 5)
+            wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
+        else 
+            wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
+        mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
+        mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "---------- WARNING -- WARNING -- WARNING ----------");
+        mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
+        wrefresh(this->mWindows[0]);
+        wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
+    }
+    if (this->animationTick >= 50 && this->animationTick <= 75) {
+        this->animationTick++;
+        wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
+        mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
+        mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
+        mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
+        wrefresh(this->mWindows[0]);
+        wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
+    }
 }
 
 void Game::createGameBoard()

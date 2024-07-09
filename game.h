@@ -17,6 +17,7 @@ public:
     
 		void createInformationBoard();
     void renderInformationBoard() const;
+    void renderInformationBoard_warning();
 
     void createGameBoard();
     void renderGameBoard() const;
@@ -75,12 +76,15 @@ private:
     int mPoints = 0;
     int mDifficulty = 0;
     int mBaseDelay = 100;
-    int mFoodCount = 3;
+    int mFoodCount = 5;
     int mDelay;
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
     const int mNumEnemySnake = 5;
+    
+    // animation effect
+    int animationTick = -1;
 };
 
 #endif
