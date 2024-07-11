@@ -9,6 +9,7 @@ class BulletSnake : public Snake {
     friend class BossSnake;
 public:
     BulletSnake(BossSnake* master);
+    BulletSnake(BossSnake *master, int y);
     bool checkCollision();
     double nextX();
     void moveForward();
