@@ -49,7 +49,7 @@ public:
     void runGame();
     
 	void createRandomFood();
-    void controlSnake() const;
+    void controlSnake();
     
 	void startGame();
     void adjustDifficulty();
@@ -83,6 +83,7 @@ private:
     int mBaseDelay = 100;
     int mFoodCount = 5;
     int mDelay;
+    int mDelayedLength = 0;
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;

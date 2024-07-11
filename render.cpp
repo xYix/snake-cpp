@@ -102,8 +102,8 @@ void Game::renderInformationBoard_warning()
         mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
         mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
         BossSnake *p = this->getBoss();
-        for (int i = 1; i <= (this->mScreenWidth - 10) * p->getHealth() / p->mMaxHealth; i++)
-            mvwprintw(this->mWindows[0], 4, i, "*");
+        for (int i = 1; i <= (this->mScreenWidth - 4) * p->getHealth() / p->mMaxHealth; i++)
+            mvwprintw(this->mWindows[0], 4, 1 + i, "*");
         wrefresh(this->mWindows[0]);
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }

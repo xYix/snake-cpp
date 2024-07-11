@@ -37,6 +37,7 @@ void Game::initializeGame()
     this->mPtrSnake->senseFood(this->mFood);
     this->adjustDifficulty();
     this->animationTick = -1;
+    this->mDelayedLength = 0;
     // ...
 }
 /* 
@@ -70,8 +71,8 @@ void Game::createRandomFood()
         bool flag = true;
         while (flag) {
             flag = false;
-            x = 2 + rand() % (this->mGameBoardWidth - 3),
-            y = 2 + rand() % (this->mGameBoardHeight - 3); // not on the corner
+            x = 2 + rand() % (this->mGameBoardWidth - 4),
+            y = 2 + rand() % (this->mGameBoardHeight - 4); // not on the corner
             for (int dx = -1; dx <= 1; dx++)
             for (int dy = -1; dy <= 1; dy++) {
                 if (this->mPtrSnake->isPartOfSnake(x + dx, y + dy)) 
@@ -84,9 +85,9 @@ void Game::createRandomFood()
     }
 }
 
-bool mysteriousSwitchX = false;
+// bool mysteriousSwitchX = false;
 bool mysteriousSwitchZ = false;
-void Game::controlSnake() const
+void Game::controlSnake()
 {
     int key;
     key = getch();
@@ -122,7 +123,8 @@ void Game::controlSnake() const
         }
         case 'x':
         {
-            mysteriousSwitchX = true;
+            this->mDelayedLength++;
+            this->mPoints += 1;
             break;
         }
         case 'z':
@@ -276,24 +278,32 @@ void Game::runGame()
         if (collision)
             break; // die
         auto eatRes = this->eatFood(this->mPtrSnake);
-        bool newFood = eatRes.first && eatRes.second != 0;
         if (!mysteriousSwitchZ) // backdoor
-            this->mPtrSnake->moveForward(!(eatRes.first || mysteriousSwitchX));
+            this->mPtrSnake->moveForward(!(eatRes.first || this->mDelayedLength > 0));
+        if (this->mDelayedLength > 0)
+            this->mDelayedLength--;
         if (eatRes.first) {
-            this->mPoints += 1;
-        }
-        if (newFood) {
-            this->createRandomFood();
-            this->allSnakeSenseFood();
-        }
-        if (eatRes.first && eatRes.second == 2) {
-            BossSnake *p = this->getBoss();
-            p->setHealth(p->getHealth() - 10);
-            this->renderInformationBoard_warning();
-        }
-        if (mysteriousSwitchX == true) { // backdoor
-            this->mPoints += 1;
-            mysteriousSwitchX = false;
+            switch (eatRes.second) {
+                case 0:
+                    this->mPoints += 1;
+                    break;
+                case 1:
+                    this->mPoints += 1;
+
+                    this->createRandomFood();
+                    this->allSnakeSenseFood();
+                    break;
+                case 2:
+                    BossSnake *p = this->getBoss();
+                    p->setHealth(p->getHealth() - 10);
+                    this->renderInformationBoard_warning();
+                    this->mPoints += 5;
+                    this->mDelayedLength += 4;
+
+                    this->createRandomFood();
+                    this->allSnakeSenseFood();
+                    break;
+            }
         }
 
         // Enemy Snake Control
