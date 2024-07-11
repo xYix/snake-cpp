@@ -28,13 +28,15 @@ private:
     int mY;
 };
 
+int dis(const SnakeBody a, const SnakeBody b);
+
 class Food
 {
 public:
     Food (SnakeBody Pos);
     Food (SnakeBody Pos, int flag);
     SnakeBody getPos() const;
-    bool getFoodType() const;
+    int getFoodType() const;
 private:
     SnakeBody mPos;
     int foodType;
@@ -80,6 +82,7 @@ private:
     std::vector<Food> mFood;
     std::vector<SnakeBody> mSnake;
 };
+bool touchFoodSingle(Snake* s, const Food i);
 
 class EnemySnake : public Snake {
     friend class Game;

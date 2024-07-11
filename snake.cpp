@@ -31,7 +31,7 @@ Food::Food(SnakeBody Pos, int flag) : mPos(Pos), foodType(flag) {};
 SnakeBody Food::getPos() const {
     return mPos;
 }
-bool Food::getFoodType() const { return foodType; }
+int Food::getFoodType() const { return foodType; }
 
 
 // SnakeBody
@@ -121,12 +121,27 @@ bool Snake::hitSnake(Snake *othersnake)
 /*
  * The snake head is touching food
  */
+int dis(const SnakeBody a, const SnakeBody b) {
+    return std::max(abs(b.getX() - a.getX()), abs(b.getY() - a.getY()));
+}
+bool touchFoodSingle(Snake* s, const Food i) {
+    SnakeBody newHead = s->createNewHead();
+    switch (i.getFoodType()) {
+        case 0:
+        case 1:
+            return newHead == i.getPos();
+            break;
+        case 2:
+            // return newHead == i.getPos();
+            return dis(newHead, i.getPos()) <= 1;
+            break;
+    }
+}
 bool Snake::touchFood()
 {
     SnakeBody newHead = this->createNewHead();
-    for (const Food &i : this->mFood)
-        if (newHead == i.getPos())
-            return true;
+    for (const Food &i : this->mFood) 
+        if (touchFoodSingle(this, i)) return true;
     return false;
 }
 

@@ -83,3 +83,9 @@ BossSnake::~BossSnake()
         delete i;
     this->mBullet.clear();
 }
+int BossSnake::getHealth() const {
+    return this->mHealth;
+}
+void BossSnake::setHealth(int newh) {
+    this->mHealth = newh;
+}

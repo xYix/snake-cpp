@@ -56,6 +56,7 @@ public:
 
     void allSnakeSenseFood();
     std::pair<bool, int> eatFood(const std::unique_ptr<Snake> &snake);
+    BossSnake* getBoss();
 private:
     std::unique_ptr<Snake> mPtrSnake;
     std::vector<std::unique_ptr<Snake> > mPtrEnemySnake;

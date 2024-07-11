@@ -39,31 +39,49 @@ void Game::initializeGame()
     this->animationTick = -1;
     // ...
 }
-
+/* 
+ * create a food at random places
+ * make sure that the food doesn't overlap with the snake.
+ */
 void Game::createRandomFood()
 {
-    /* 
-     * create a food at random places
-     * make sure that the food doesn't overlap with the snake.
-     */
-    int x, y;
-    bool flag = true;
-    while (flag) {
-        x = 1 + rand() % (this->mGameBoardWidth - 2),
-        y = 1 + rand() % (this->mGameBoardHeight - 2);
-        if (this->mPtrSnake->isPartOfSnake(x, y)) continue;
-        for (auto &s : this->mPtrEnemySnake)
-            if (s && s->isPartOfSnake(x, y)) continue;
-        flag = false;
-        for (const Food &i : this->mFood)
-            if (i.getPos() == SnakeBody(x, y)) {
-                flag = true; break;
-            }
+    if (this->mDifficulty <= 5) {
+        int x, y;
+        bool flag = true;
+        while (flag) {
+            x = 1 + rand() % (this->mGameBoardWidth - 2),
+            y = 1 + rand() % (this->mGameBoardHeight - 2);
+            if (this->mPtrSnake->isPartOfSnake(x, y)) continue;
+            for (auto &s : this->mPtrEnemySnake)
+                if (s && s->isPartOfSnake(x, y)) continue;
+            flag = false;
+            for (const Food &i : this->mFood)
+                if (i.getPos() == SnakeBody(x, y)) {
+                    flag = true; break;
+                }
+        }
+        /*
+        ? When whole screen is fully occupied by snake
+        */
+        this->mFood.push_back(Food(SnakeBody(x, y)));
     }
-    /*
-    ? When whole screen is fully occupied by snake
-    */
-    this->mFood.push_back(SnakeBody(x, y));
+    else {
+        int x, y;
+        bool flag = true;
+        while (flag) {
+            flag = false;
+            x = 2 + rand() % (this->mGameBoardWidth - 3),
+            y = 2 + rand() % (this->mGameBoardHeight - 3); // not on the corner
+            for (int dx = -1; dx <= 1; dx++)
+            for (int dy = -1; dy <= 1; dy++) {
+                if (this->mPtrSnake->isPartOfSnake(x + dx, y + dy)) 
+                    { flag = true; break; }
+                if (this->mBossSnake->isPartOfSnake(x + dx, y + dy))
+                    { flag = true; break; }
+            }
+        }
+        this->mFood.push_back(Food(SnakeBody(x, y), 2));
+    }
 }
 
 bool mysteriousSwitchX = false;
@@ -138,6 +156,9 @@ void EnemySnake::initializeSnake()
     this->mSnake.push_back(SnakeBody(centerX, centerY));
     this->mDirection = Direction(rand() % 4);
 }
+/*
+All game process logic is here.
+*/
 void Game::adjustDifficulty()
 {
     if (this->mPoints >= 2) this->mDifficulty = 1;
@@ -161,6 +182,10 @@ void Game::adjustDifficulty()
     }
     if (this->mDifficulty == 6 && this->animationTick == 50) {
         this->mBossSnake.reset(new BossSnake(this->mGameBoardWidth, this->mGameBoardHeight, this));
+    }
+    if (this->mDifficulty == 6 && this->animationTick == 100) {
+        this->createRandomFood();
+        this->allSnakeSenseFood();
     }
 }
 
@@ -190,10 +215,15 @@ bool BulletSnake::checkCollision()
     int sX = int(this->posX),
         sY = int(this->posY);
     int tX = int(this->nextX());
-    for (int x = sX; x >= tX; x--)
+    bool hitBody = false;
+    bool hitHead = false;
+    for (int x = sX; x >= tX; x--) {
         if (p->isPartOfSnake(x, sY))
-            return true;
-    return false;
+            hitBody = true;
+        if (p->mSnake[0] == SnakeBody(x, sY))
+            hitHead = true;
+    }
+    return hitBody && !hitHead;
 }
 
 void Game::allSnakeSenseFood() {
@@ -208,12 +238,16 @@ pair<bool, int>
 */
 std::pair<bool, int> Game::eatFood(const std::unique_ptr<Snake> &snake) {
     for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
-        if (i->getPos() == snake->createNewHead()) {
+        if (touchFoodSingle(snake.get(), *i)) {
             int res = i->getFoodType();
             this->mFood.erase(i);
             return std::make_pair(true, res);
         }
     return std::make_pair(false, 0);
+}
+
+BossSnake* Game::getBoss() {
+    return dynamic_cast<BossSnake*>(this->mBossSnake.get());
 }
 
 void Game::runGame()
@@ -241,16 +275,21 @@ void Game::runGame()
         bool collision = this->mPtrSnake->checkCollision();
         if (collision)
             break; // die
-        bool touchFood = this->mPtrSnake->touchFood();
-        bool newFood = touchFood && (this->eatFood(this->mPtrSnake).second == 1);
+        auto eatRes = this->eatFood(this->mPtrSnake);
+        bool newFood = eatRes.first && eatRes.second != 0;
         if (!mysteriousSwitchZ) // backdoor
-            this->mPtrSnake->moveForward(!(touchFood || mysteriousSwitchX));
-        if (touchFood) {
+            this->mPtrSnake->moveForward(!(eatRes.first || mysteriousSwitchX));
+        if (eatRes.first) {
             this->mPoints += 1;
         }
         if (newFood) {
             this->createRandomFood();
             this->allSnakeSenseFood();
+        }
+        if (eatRes.first && eatRes.second == 2) {
+            BossSnake *p = this->getBoss();
+            p->setHealth(p->getHealth() - 10);
+            this->renderInformationBoard_warning();
         }
         if (mysteriousSwitchX == true) { // backdoor
             this->mPoints += 1;
@@ -266,14 +305,14 @@ void Game::runGame()
             if (enemycollision) {
                 for (auto i : s->mSnake)
                     if (rand() % 5 != 0)
-                        this->mFood.push_back(Food(i, false));
+                        this->mFood.push_back(Food(i, 0));
                 this->allSnakeSenseFood();
                 s.reset(nullptr);
                 continue;
             }
-            bool enemytouchFood = s->touchFood();
-            bool enemynewFood = enemytouchFood && (this->eatFood(s).second == 1);
-            s->moveForward(!(enemytouchFood || s->mSnake.size() < s->mInitialSnakeLength));
+            auto enemyeatRes = this->eatFood(s);
+            bool enemynewFood = enemyeatRes.first && (enemyeatRes.second != 0);
+            s->moveForward(!(enemyeatRes.first || s->mSnake.size() < s->mInitialSnakeLength));
             if (enemynewFood) {
                 this->createRandomFood();
                 this->allSnakeSenseFood();
@@ -282,13 +321,12 @@ void Game::runGame()
 
         // Boss Onstage
         if (this->animationTick > 50 && this->animationTick <= 100 && this->animationTick % 3 == 0) {
-            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
-            p->onstageAnimation();
+            this->getBoss()->onstageAnimation();
         }
         // Boss Logic
         if (this->mBossSnake && this->animationTick > 100) {
-            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
-            if (animationTick % 5 == 0)
+            BossSnake *p = this->getBoss();
+            if (animationTick % 4 == 0)
                 p->summonBullet();
             p->allBulletForward();
         }
@@ -298,8 +336,7 @@ void Game::runGame()
             this->renderSnake(s, ENEMY_SNAKE_COLOR);
         this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
         if (this->mBossSnake) {
-            BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
-            this->renderBulletSnake(p, DEFAULT_COLOR);
+            this->renderBulletSnake(this->getBoss(), DEFAULT_COLOR);
         }
         this->renderFood();
 

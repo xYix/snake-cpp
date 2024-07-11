@@ -30,6 +30,8 @@ public:
     void summonBullet();
     void allBulletForward();
     void attack();
+    int getHealth() const;
+    void setHealth(int newh);
     ~BossSnake();
 private:
     std::vector<BulletSnake*> mBullet;

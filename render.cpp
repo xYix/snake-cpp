@@ -76,15 +76,15 @@ void Game::renderInformationBoard() const
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
     mvwprintw(this->mWindows[0], 2, 1, "");
     mvwprintw(this->mWindows[0], 3, 1, "");
-    mvwprintw(this->mWindows[0], 4, 1, "");
+    mvwprintw(this->mWindows[0], 4, 1, "ver 0.0.0");
     wrefresh(this->mWindows[0]);
 }
 void Game::renderInformationBoard_warning()
 {
-    if (this->animationTick == 0 || this->animationTick == 50) {
-        this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, 0, 0);
-        box(this->mWindows[0], 0, 0);
-    }
+    // if (this->animationTick == 0 || this->animationTick == 50) {
+    this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, 0, 0);
+    box(this->mWindows[0], 0, 0);
+    // }
     if (this->animationTick >= 0 && this->animationTick < 50) {
         if (this->animationTick % 10 < 5)
             wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
@@ -96,11 +96,14 @@ void Game::renderInformationBoard_warning()
         wrefresh(this->mWindows[0]);
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
-    if (this->animationTick >= 50 && this->animationTick <= 75) {
+    if (this->animationTick >= 50) {
         wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
         mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
         mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
+        BossSnake *p = this->getBoss();
+        for (int i = 1; i <= (this->mScreenWidth - 10) * p->getHealth() / p->mMaxHealth; i++)
+            mvwprintw(this->mWindows[0], 4, i, "*");
         wrefresh(this->mWindows[0]);
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
@@ -253,8 +256,21 @@ void Game::renderDifficulty() const
 void Game::renderFood() const
 {   
     wattrset(this->mWindows[1], COLOR_PAIR(FOOD_COLOR));
-    for (const Food &i : this->mFood)
-        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), i.getFoodType() ? this->mFoodSymbol : this->mFakeFoodSymbol);
+    for (const Food &i : this->mFood) {
+        switch (i.getFoodType()) {
+            case 0:
+                mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), this->mFakeFoodSymbol);
+                break;
+            case 1:
+                mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), this->mFoodSymbol);
+                break;
+            case 2:
+                for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                    mvwaddch(this->mWindows[1], i.getPos().getY() + dy, i.getPos().getX() + dx, this->mFoodSymbol);
+                break;
+        }
+    }
     wrefresh(this->mWindows[1]);
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
