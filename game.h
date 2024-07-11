@@ -55,7 +55,7 @@ public:
     void adjustDifficulty();
 
     void allSnakeSenseFood();
-    bool eatFood(const std::unique_ptr<Snake> &snake);
+    std::pair<bool, int> eatFood(const std::unique_ptr<Snake> &snake);
 private:
     std::unique_ptr<Snake> mPtrSnake;
     std::vector<std::unique_ptr<Snake> > mPtrEnemySnake;

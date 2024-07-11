@@ -254,7 +254,7 @@ void Game::renderFood() const
 {   
     wattrset(this->mWindows[1], COLOR_PAIR(FOOD_COLOR));
     for (const Food &i : this->mFood)
-        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), i.isRealFood() ? this->mFoodSymbol : this->mFakeFoodSymbol);
+        mvwaddch(this->mWindows[1], i.getPos().getY(), i.getPos().getX(), i.getFoodType() ? this->mFoodSymbol : this->mFakeFoodSymbol);
     wrefresh(this->mWindows[1]);
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }

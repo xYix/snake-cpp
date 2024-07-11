@@ -32,12 +32,12 @@ class Food
 {
 public:
     Food (SnakeBody Pos);
-    Food (SnakeBody Pos, bool flag);
+    Food (SnakeBody Pos, int flag);
     SnakeBody getPos() const;
-    bool isRealFood() const;
+    bool getFoodType() const;
 private:
     SnakeBody mPos;
-    bool RealFood;
+    int foodType;
 };
 
 // Snake class should have no depency on the GUI library

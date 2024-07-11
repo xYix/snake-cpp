@@ -26,12 +26,12 @@ Direction directionRight(Direction dir) {
 
 // Food
 
-Food::Food(SnakeBody Pos) : mPos(Pos), RealFood(true) {};
-Food::Food(SnakeBody Pos, bool flag) : mPos(Pos), RealFood(flag) {};
+Food::Food(SnakeBody Pos) : mPos(Pos), foodType(true) {};
+Food::Food(SnakeBody Pos, int flag) : mPos(Pos), foodType(flag) {};
 SnakeBody Food::getPos() const {
     return mPos;
 }
-bool Food::isRealFood() const { return RealFood; }
+bool Food::getFoodType() const { return foodType; }
 
 
 // SnakeBody

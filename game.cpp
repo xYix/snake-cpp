@@ -201,15 +201,19 @@ void Game::allSnakeSenseFood() {
     for (auto &s : this->mPtrEnemySnake) if (s)
         s->senseFood(this->mFood);
 }
-bool Game::eatFood(const std::unique_ptr<Snake> &snake) {
-    // true if new food need to be spawned
+/*
+pair<bool, int>
+- bool : eat success
+- int : food type
+*/
+std::pair<bool, int> Game::eatFood(const std::unique_ptr<Snake> &snake) {
     for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
         if (i->getPos() == snake->createNewHead()) {
-            bool res = i->isRealFood();
+            int res = i->getFoodType();
             this->mFood.erase(i);
-            return res;
+            return std::make_pair(true, res);
         }
-    return false;
+    return std::make_pair(false, 0);
 }
 
 void Game::runGame()
@@ -238,13 +242,13 @@ void Game::runGame()
         if (collision)
             break; // die
         bool touchFood = this->mPtrSnake->touchFood();
-        bool eatFood = touchFood && this->eatFood(this->mPtrSnake);
+        bool newFood = touchFood && (this->eatFood(this->mPtrSnake).second == 1);
         if (!mysteriousSwitchZ) // backdoor
             this->mPtrSnake->moveForward(!(touchFood || mysteriousSwitchX));
         if (touchFood) {
             this->mPoints += 1;
         }
-        if (eatFood) {
+        if (newFood) {
             this->createRandomFood();
             this->allSnakeSenseFood();
         }
@@ -268,9 +272,9 @@ void Game::runGame()
                 continue;
             }
             bool enemytouchFood = s->touchFood();
-            bool enemyeatFood = enemytouchFood && this->eatFood(s);
+            bool enemynewFood = enemytouchFood && (this->eatFood(s).second == 1);
             s->moveForward(!(enemytouchFood || s->mSnake.size() < s->mInitialSnakeLength));
-            if (enemyeatFood) {
+            if (enemynewFood) {
                 this->createRandomFood();
                 this->allSnakeSenseFood();
             }
