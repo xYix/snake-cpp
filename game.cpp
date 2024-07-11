@@ -143,9 +143,9 @@ void Game::adjustDifficulty()
     if (this->mPoints >= 2) this->mDifficulty = 1;
     if (this->mPoints >= 5) this->mDifficulty = 2;
     if (this->mPoints >= 10) this->mDifficulty = 3;
-    if (this->mPoints >= 18) this->mDifficulty = 4;
-    if (this->mPoints >= 31) this->mDifficulty = 5;
-    if (this->mPoints >= 50) this->mDifficulty = 6;
+    if (this->mPoints >= 15) this->mDifficulty = 4;
+    if (this->mPoints >= 23) this->mDifficulty = 5;
+    if (this->mPoints >= 36) this->mDifficulty = 6;
     this->mDelay = this->mBaseDelay;
     for (int i = 0; i < this->mNumEnemySnake; i++)
         if (this->mDifficulty >= 1 + i && this->mDifficulty < 6 && !this->mPtrEnemySnake[i]) {
@@ -181,6 +181,18 @@ bool Snake::checkCollision()
             if (this->hitSnake(s))
                 return true;
     }
+    return false;
+}
+
+bool BulletSnake::checkCollision()
+{
+    Snake *p = this->thisgame->mPtrSnake.get();
+    int sX = int(this->posX),
+        sY = int(this->posY);
+    int tX = int(this->nextX());
+    for (int x = sX; x >= tX; x--)
+        if (p->isPartOfSnake(x, sY))
+            return true;
     return false;
 }
 
@@ -265,11 +277,12 @@ void Game::runGame()
         }
 
         // Boss Onstage
-        if (this->animationTick > 50 && this->animationTick <= 170 && this->animationTick % 7 == 0) {
+        if (this->animationTick > 50 && this->animationTick <= 100 && this->animationTick % 3 == 0) {
             BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
             p->onstageAnimation();
         }
-        if (this->mBossSnake && this->animationTick > 170) {
+        // Boss Logic
+        if (this->mBossSnake && this->animationTick > 100) {
             BossSnake *p = dynamic_cast<BossSnake*>(this->mBossSnake.get());
             if (animationTick % 5 == 0)
                 p->summonBullet();

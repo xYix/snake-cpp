@@ -13,6 +13,7 @@ class Game
 {
     friend class Snake;
     friend class EnemySnake;
+    friend class BulletSnake;
 public:
     Game();
     ~Game();

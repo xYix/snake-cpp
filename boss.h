@@ -9,6 +9,8 @@ class BulletSnake : public Snake {
     friend class BossSnake;
 public:
     BulletSnake(BossSnake* master);
+    bool checkCollision();
+    double nextX();
     void moveForward();
     void materialization();
 private:

@@ -18,9 +18,13 @@ BulletSnake::BulletSnake(BossSnake *master):
     }
     this->posY += 0.1; // avoid float error
 }
+double BulletSnake::nextX() {
+    double T = this->innerClock + 1;
+    return (1.0 - (T * T) / 2500.0) * (this->mGameBoardWidth + this->mInitialSnakeLength);
+}
 void BulletSnake::moveForward() {
+    this->posX = BulletSnake::nextX();
     this->innerClock++;
-    this->posX = (1.0 - (this->innerClock * this->innerClock) / 2500.0) * (this->mGameBoardWidth + this->mInitialSnakeLength);
 }
 void BulletSnake::materialization() {
     int trueX = int(this->posX),
@@ -58,18 +62,18 @@ void BossSnake::summonBullet() {
     this->mBullet.push_back(new BulletSnake(this));
 }
 void BossSnake::allBulletForward() {
-    for (auto &i : this->mBullet) {
-        i->moveForward();
-        i->materialization();
-    }
     std::vector<BulletSnake*>::iterator i = this->mBullet.begin();
     while (i != this->mBullet.end()) {
-        if ((*i)->innerClock > 50) {
+        if ((*i)->innerClock >= 50 || (*i)->checkCollision()) {
             delete *i;
             i = this->mBullet.erase(i);
         }
         else
             i++;
+    }
+    for (auto &i : this->mBullet) {
+        i->moveForward();
+        i->materialization();
     }
 }
 
