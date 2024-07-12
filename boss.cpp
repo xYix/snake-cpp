@@ -18,6 +18,19 @@ BulletSnake::BulletSnake(BossSnake *master):
     }
     this->posY += 0.1; // avoid float error
 }
+
+BulletSnake::BulletSnake(BossSnake *master, int y):
+    Snake(master->mGameBoardWidth, master->mGameBoardHeight, master->mInitialBulletLength, master->thisgame), 
+    mMaster(master),
+    innerClock(0),
+    posX(0),
+    posY(0)
+{
+    this->mSnake.clear();
+    this->posY = y;
+    this->posY += 0.1;
+}
+
 double BulletSnake::nextX() {
     double T = this->innerClock + 1;
     return (1.0 - (T * T) / 2500.0) * (this->mGameBoardWidth + this->mInitialSnakeLength);
@@ -59,7 +72,38 @@ void BossSnake::onstageAnimation() {
 }
 
 void BossSnake::summonBullet() {
-    this->mBullet.push_back(new BulletSnake(this));
+    int j = 1 + rand() % 6;
+    if (j <= 3)
+    {
+        this->mBullet.push_back(new BulletSnake(this));
+    }
+    else if (j <= 5)
+    {
+        int y;
+        while (true) {
+            y = 2 + rand() % (this->mGameBoardHeight - 3);
+            if (y >= this->mGameBoardHeight / 2 - this->mHalfWidth - 1 &&
+                y <= this->mGameBoardHeight / 2 + this->mHalfWidth + 1)
+                continue;
+            break;
+        }
+        this->mBullet.push_back(new BulletSnake(this, y));
+        this->mBullet.push_back(new BulletSnake(this, y - 1));
+    }
+    else
+    {
+        int y;
+        while (true){
+            y = 3 + rand() % (this->mGameBoardHeight - 4);
+            if (y >= this->mGameBoardHeight / 2 - this->mHalfWidth - 2 &&
+                y <= this->mGameBoardHeight / 2 + this->mHalfWidth + 2)
+                continue;
+            break;
+        }
+        this->mBullet.push_back(new BulletSnake(this, y));
+        this->mBullet.push_back(new BulletSnake(this, y - 1));
+        this->mBullet.push_back(new BulletSnake(this, y - 2));
+    }
 }
 void BossSnake::allBulletForward() {
     std::vector<BulletSnake*>::iterator i = this->mBullet.begin();
