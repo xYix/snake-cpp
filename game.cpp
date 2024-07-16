@@ -191,6 +191,9 @@ void Game::adjustDifficulty()
         this->createRandomFood();
         this->allSnakeSenseFood();
     }
+    if (this->mDifficulty == 6 && this->getBoss()->mHealth <= 0) {
+        this->mFood.clear();
+    }
 }
 
 bool Snake::checkCollision()
@@ -288,6 +291,14 @@ void BossSnake::attack() {
     else {
         if (this->mSnake.size())
             this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+        if (this->mSnake.size())
+            this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+        if (this->mSnake.size())
+            this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+        if (this->mSnake.size())
+            this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+        if (this->mSnake.size())
+            this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
     }
 }
 
@@ -297,18 +308,6 @@ void Game::runGame()
     int key;
     while (true)
     {
-        /* TODO 
-         * this is the main control loop of the game.
-         * it keeps running a while loop, and does the following things:
-         * 	1. process your keyboard input
-         * 	2. clear the window
-         * 	3. move the current snake forward
-         * 	4. check if the snake has eaten the food after movement
-         * 	5. check if the snake dies after the movement
-         * 	6. make corresponding steps for the ``if conditions'' in 3 and 4.
-         *   7. render the position of the food and snake in the new frame of window. 
-         *   8. update other game states and refresh the window
-         */
         this->controlSnake();
         this->createGameBoard();
 
@@ -375,10 +374,12 @@ void Game::runGame()
         // Boss Logic
         if (this->mBossSnake && this->animationClock > 100) {
             BossSnake *p = this->getBoss();
-            if (animationClock % 4 == 0)
-                p->summonBullet();
-            p->allBulletForward();
-            p->attack();
+            if (p->mHealth > 0) {
+                if (animationClock % 5 == 0)
+                    p->summonBullet();
+                p->allBulletForward();
+            }
+            p->attack(); // also death logic
         }
 
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
