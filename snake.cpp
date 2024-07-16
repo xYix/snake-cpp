@@ -124,24 +124,23 @@ bool Snake::hitSnake(Snake *othersnake)
 int dis(const SnakeBody a, const SnakeBody b) {
     return std::max(abs(b.getX() - a.getX()), abs(b.getY() - a.getY()));
 }
-bool touchFoodSingle(Snake* s, const Food i) {
-    SnakeBody newHead = s->createNewHead();
-    switch (i.getFoodType()) {
+bool Food::touch(SnakeBody p) const {
+    switch (this->getFoodType()) {
         case 0:
         case 1:
-            return newHead == i.getPos();
+            return p == this->getPos();
             break;
         case 2:
-            // return newHead == i.getPos();
-            return dis(newHead, i.getPos()) <= 1;
+            return dis(p, this->getPos()) <= 1;
             break;
     }
+
 }
 bool Snake::touchFood()
 {
     SnakeBody newHead = this->createNewHead();
     for (const Food &i : this->mFood) 
-        if (touchFoodSingle(this, i)) return true;
+        if (i.touch(newHead)) return true;
     return false;
 }
 

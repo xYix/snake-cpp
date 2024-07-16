@@ -79,6 +79,9 @@ void Game::createRandomFood()
                     { flag = true; break; }
                 if (this->mBossSnake->isPartOfSnake(x + dx, y + dy))
                     { flag = true; break; }
+                for (const Food &i : this->mFood)
+                    if (i.touch(SnakeBody(x + dx, y + dy)))
+                        { flag = true; break; }
             }
         }
         this->mFood.push_back(Food(SnakeBody(x, y), 2));
@@ -245,7 +248,7 @@ pair<bool, int>
 */
 std::pair<bool, int> Game::eatFood(const std::unique_ptr<Snake> &snake) {
     for (auto i = this->mFood.begin(); i != this->mFood.end(); i++)
-        if (touchFoodSingle(snake.get(), *i)) {
+        if (i->touch(snake->createNewHead())) {
             int res = i->getFoodType();
             this->mFood.erase(i);
             return std::make_pair(true, res);

@@ -37,6 +37,7 @@ public:
     Food (SnakeBody Pos, int flag);
     SnakeBody getPos() const;
     int getFoodType() const;
+    bool touch(SnakeBody) const;
 private:
     SnakeBody mPos;
     int foodType;
