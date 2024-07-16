@@ -9,7 +9,7 @@
 #define FOOD_COLOR 1
 #define SNAKE_COLOR 2
 #define DEFAULT_COLOR 3
-#define ENEMY_SNAKE_COLOR 4
+#define ENEMY_SNAKE_COLOR 5
 
 Game::Game()
 {
