@@ -22,6 +22,7 @@ public:
 	void createInformationBoard();
     void renderInformationBoard() const;
     void renderInformationBoard_warning();
+    void renderInformationBoard_win() const;
 
     void createGameBoard();
     void renderGameBoard() const;

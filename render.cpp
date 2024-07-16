@@ -74,9 +74,9 @@ void Game::createInformationBoard()
 void Game::renderInformationBoard() const
 {
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
-    mvwprintw(this->mWindows[0], 2, 1, "");
-    mvwprintw(this->mWindows[0], 3, 1, "");
-    mvwprintw(this->mWindows[0], 4, 1, "ver 0.0.0");
+    mvwprintw(this->mWindows[0], 2, 1, "Collet food and hunt down your enemies to get on top of the food chain!");
+    mvwprintw(this->mWindows[0], 3, 1, "        ... or is it the top?");
+    mvwprintw(this->mWindows[0], 4, 1, "ver 1.0.0");
     wrefresh(this->mWindows[0]);
 }
 void Game::renderInformationBoard_warning()
@@ -85,7 +85,14 @@ void Game::renderInformationBoard_warning()
     this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, 0, 0);
     box(this->mWindows[0], 0, 0);
     // }
-    if (this->animationClock >= 0 && this->animationClock < 50) {
+    if (this->mBossSnake && this->getBoss()->mSnake.size() == 0) {
+        mvwprintw(this->mWindows[0], 1, 1, "");
+        mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 5, "VICTORY!");
+        mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 10, "you beat the game!");
+        mvwprintw(this->mWindows[0], 4, 1, "");
+        wrefresh(this->mWindows[0]);
+    }
+    else if (this->animationClock >= 0 && this->animationClock < 50) {
         if (this->animationClock % 10 < 5)
             wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         else 
@@ -96,7 +103,7 @@ void Game::renderInformationBoard_warning()
         wrefresh(this->mWindows[0]);
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
-    if (this->animationClock >= 50) {
+    else if (this->animationClock >= 50) {
         wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
         mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");

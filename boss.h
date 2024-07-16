@@ -34,6 +34,7 @@ public:
     void attack();
     int getHealth() const;
     void setHealth(int newh);
+    void clearBullet();
     ~BossSnake();
 private:
     std::vector<BulletSnake*> mBullet;

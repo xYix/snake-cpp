@@ -191,7 +191,7 @@ void Game::adjustDifficulty()
         this->createRandomFood();
         this->allSnakeSenseFood();
     }
-    if (this->mDifficulty == 6 && this->getBoss()->mHealth <= 0) {
+    if (this->mDifficulty == 6 && this->mBossSnake && this->getBoss()->mHealth <= 0) {
         this->mFood.clear();
     }
 }
@@ -299,6 +299,8 @@ void BossSnake::attack() {
             this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
         if (this->mSnake.size())
             this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+        if (!this->mSnake.size())
+            this->clearBullet();
     }
 }
 

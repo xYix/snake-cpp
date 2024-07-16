@@ -126,6 +126,12 @@ void BossSnake::allBulletForward() {
     }
 }
 
+void BossSnake::clearBullet()
+{
+    for (auto &i : this->mBullet)
+        delete i;
+    this->mBullet.clear();
+}
 BossSnake::~BossSnake()
 {
     for (auto &i : this->mBullet)
