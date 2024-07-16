@@ -81,12 +81,12 @@ void Game::renderInformationBoard() const
 }
 void Game::renderInformationBoard_warning()
 {
-    // if (this->animationTick == 0 || this->animationTick == 50) {
+    // if (this->animationClock == 0 || this->animationClock == 50) {
     this->mWindows[0] = newwin(this->mInformationHeight, this->mScreenWidth, 0, 0);
     box(this->mWindows[0], 0, 0);
     // }
-    if (this->animationTick >= 0 && this->animationTick < 50) {
-        if (this->animationTick % 10 < 5)
+    if (this->animationClock >= 0 && this->animationClock < 50) {
+        if (this->animationClock % 10 < 5)
             wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         else 
             wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
@@ -96,7 +96,7 @@ void Game::renderInformationBoard_warning()
         wrefresh(this->mWindows[0]);
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
-    if (this->animationTick >= 50) {
+    if (this->animationClock >= 50) {
         wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
         mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
         mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");

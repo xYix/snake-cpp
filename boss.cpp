@@ -53,7 +53,8 @@ void BulletSnake::materialization() {
 
 BossSnake::BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game):
     Snake(gameBoardWidth, gameBoardHeight, 0, game),
-    mHealth(this->mMaxHealth)
+    mHealth(this->mMaxHealth),
+    mAttackClock(0)
 {
     this->mSnake.clear();
     for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
@@ -70,10 +71,14 @@ void BossSnake::onstageAnimation() {
     for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
         this->mSnake.push_back(SnakeBody(this->mGameBoardWidth - beforeLength - 2, this->mGameBoardHeight / 2 + i));
 }
+void BossSnake::backstageAnimation() {
+    for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
+        this->mSnake.pop_back();
+}
 
 void BossSnake::summonBullet() {
     int j = 1 + rand() % 6;
-    if (j <= 3)
+    if (j <= 3 || this->mHealth > this->mMaxHealth / 2)
     {
         this->mBullet.push_back(new BulletSnake(this));
     }

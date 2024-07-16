@@ -36,7 +36,7 @@ void Game::initializeGame()
         this->createRandomFood();
     this->mPtrSnake->senseFood(this->mFood);
     this->adjustDifficulty();
-    this->animationTick = -1;
+    this->animationClock = -1;
     this->mDelayedLength = 0;
     // ...
 }
@@ -175,17 +175,19 @@ void Game::adjustDifficulty()
             this->mPtrEnemySnake[i].reset(new EnemySnake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, this));
             this->mPtrEnemySnake[i]->senseFood(this->mFood);
         }
-    if (this->mDifficulty == 6 && this->animationTick == -1) {
+    if (this->mDifficulty == 6 && this->animationClock == -1) {
         for (auto &i : this->mPtrEnemySnake)
             i.reset(nullptr);
         this->mFood.clear();
         this->allSnakeSenseFood();
-        this->animationTick = 0;
+        this->animationClock = 0;
     }
-    if (this->mDifficulty == 6 && this->animationTick == 50) {
+    if (this->mDifficulty == 6 && this->animationClock == 50) {
         this->mBossSnake.reset(new BossSnake(this->mGameBoardWidth, this->mGameBoardHeight, this));
     }
-    if (this->mDifficulty == 6 && this->animationTick == 100) {
+    if (this->mDifficulty == 6 && this->animationClock == 100) {
+        this->createRandomFood();
+        this->createRandomFood();
         this->createRandomFood();
         this->allSnakeSenseFood();
     }
@@ -222,7 +224,7 @@ bool BulletSnake::checkCollision()
     for (int x = sX; x >= tX; x--) {
         if (p->isPartOfSnake(x, sY))
             hitBody = true;
-        if (p->mSnake[0] == SnakeBody(x, sY))
+        if (p->createNewHead() == SnakeBody(x, sY))
             hitHead = true;
     }
     return hitBody && !hitHead;
@@ -250,6 +252,43 @@ std::pair<bool, int> Game::eatFood(const std::unique_ptr<Snake> &snake) {
 
 BossSnake* Game::getBoss() {
     return dynamic_cast<BossSnake*>(this->mBossSnake.get());
+}
+void BossSnake::attack() {
+    if (this->mHealth > 0) {
+        if (this->mAttackClock == 0) {
+            int y = this->thisgame->mPtrSnake->mSnake[0].getY();
+            if (y >= this->mGameBoardHeight / 2 - this->mHalfWidth &&
+                y <= this->mGameBoardHeight / 2 + this->mHalfWidth)
+                this->mAttackClock++;
+        }
+        else if (this->mAttackClock > 0 && this->mAttackClock < 1000000) {
+            if (this->getLength() < this->mGameBoardWidth - 25)
+                this->onstageAnimation(), this->onstageAnimation(), this->onstageAnimation(),
+                this->mAttackClock++;
+            else if (this->getLength() > this->mGameBoardWidth - 5)
+                this->onstageAnimation(), this->onstageAnimation(),
+                this->mAttackClock++;
+            else this->mAttackClock = 1000000;
+
+        }
+        else if (this->mAttackClock >= 1000000 && this->mAttackClock < 2000000){
+            if (this->mAttackClock == 1000030)
+                this->mAttackClock = 2000000;
+            else 
+                this->mAttackClock++;
+        }
+        else {
+            if (this->getLength() > 16)
+                this->backstageAnimation(), this->backstageAnimation(),
+                this->mAttackClock++;
+            else
+                this->mAttackClock = 0;
+        }
+    }
+    else {
+        if (this->mSnake.size())
+            this->mSnake.erase(this->mSnake.begin() + rand() % this->mSnake.size());
+    }
 }
 
 void Game::runGame()
@@ -330,15 +369,16 @@ void Game::runGame()
         }
 
         // Boss Onstage
-        if (this->animationTick > 50 && this->animationTick <= 100 && this->animationTick % 3 == 0) {
+        if (this->animationClock > 50 && this->animationClock <= 100 && this->animationClock % 3 == 0) {
             this->getBoss()->onstageAnimation();
         }
         // Boss Logic
-        if (this->mBossSnake && this->animationTick > 100) {
+        if (this->mBossSnake && this->animationClock > 100) {
             BossSnake *p = this->getBoss();
-            if (animationTick % 4 == 0)
+            if (animationClock % 4 == 0)
                 p->summonBullet();
             p->allBulletForward();
+            p->attack();
         }
 
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
@@ -346,7 +386,7 @@ void Game::runGame()
             this->renderSnake(s, ENEMY_SNAKE_COLOR);
         this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
         if (this->mBossSnake) {
-            this->renderBulletSnake(this->getBoss(), DEFAULT_COLOR);
+            this->renderBulletSnake(this->getBoss(), ENEMY_SNAKE_COLOR);
         }
         this->renderFood();
 
@@ -357,9 +397,9 @@ void Game::runGame()
         this->renderPoints();
         this->renderDifficulty();
 
-        if (this->animationTick >= 0)
+        if (this->animationClock >= 0)
             this->renderInformationBoard_warning(),
-            this->animationTick++;
+            this->animationClock++;
         refresh();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));

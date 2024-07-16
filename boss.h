@@ -28,6 +28,7 @@ public:
     BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game);
     int getLength() const;
     void onstageAnimation();
+    void backstageAnimation();
     void summonBullet();
     void allBulletForward();
     void attack();
@@ -40,4 +41,5 @@ private:
     const int mInitialBulletLength = 8;
     const int mMaxHealth = 100;
     int mHealth;
+    int mAttackClock;
 };

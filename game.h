@@ -14,11 +14,12 @@ class Game
     friend class Snake;
     friend class EnemySnake;
     friend class BulletSnake;
+    friend class BossSnake;
 public:
     Game();
     ~Game();
     
-		void createInformationBoard();
+	void createInformationBoard();
     void renderInformationBoard() const;
     void renderInformationBoard_warning();
 
@@ -90,7 +91,7 @@ private:
     const int mNumEnemySnake = 5;
     
     // animation effect
-    int animationTick = -1;
+    int animationClock = -1;
 };
 
 #endif
