@@ -377,7 +377,7 @@ void Game::runGame()
         if (this->mBossSnake && this->animationClock > 100) {
             BossSnake *p = this->getBoss();
             if (p->mHealth > 0) {
-                if (animationClock % 5 == 0)
+                if (animationClock % 4 == 0)
                     p->summonBullet();
                 p->allBulletForward();
             }
