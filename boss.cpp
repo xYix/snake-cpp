@@ -2,7 +2,7 @@
 #include "boss.h"
 
 BulletSnake::BulletSnake(BossSnake *master):
-    Snake(master->mGameBoardWidth, master->mGameBoardHeight, master->mInitialBulletLength, master->thisgame), 
+    Snake(master->mGameBoardWidth, master->mGameBoardHeight, 0, master->thisgame), 
     mMaster(master),
     innerClock(0),
     posX(0),
@@ -20,7 +20,7 @@ BulletSnake::BulletSnake(BossSnake *master):
 }
 
 BulletSnake::BulletSnake(BossSnake *master, int y):
-    Snake(master->mGameBoardWidth, master->mGameBoardHeight, master->mInitialBulletLength, master->thisgame), 
+    Snake(master->mGameBoardWidth, master->mGameBoardHeight, 0, master->thisgame), 
     mMaster(master),
     innerClock(0),
     posX(0),
@@ -33,7 +33,7 @@ BulletSnake::BulletSnake(BossSnake *master, int y):
 
 double BulletSnake::nextX() {
     double T = this->innerClock + 1;
-    return (1.0 - (T * T) / 2500.0) * (this->mGameBoardWidth + this->mInitialSnakeLength);
+    return (1.0 - (T * T) / 2500.0) * (this->mGameBoardWidth + this->mLength);
 }
 void BulletSnake::moveForward() {
     this->posX = BulletSnake::nextX();
@@ -44,12 +44,52 @@ void BulletSnake::materialization() {
         trueY = int(this->posY);
     
     this->mSnake.clear();
-    for (int i = 0; i < this->mInitialSnakeLength; i++) {
+    for (int i = 0; i < this->mLength; i++) {
         if (trueX + i >= 1 && trueX + i < this->mGameBoardWidth - 1 && 
             trueY >= 1 && trueY < this->mGameBoardHeight - 1)
                 this->mSnake.push_back(SnakeBody(trueX + i, trueY));
     }
 }
+
+SnakeBody BossSnake::getHead() const {
+    return this->mSnake[this->mSnake.size() - this->mHalfWidth - 1];
+}
+SniperSnake::SniperSnake(BossSnake* master, SnakeBody target, double angle) :
+    Snake(master->mGameBoardWidth, master->mGameBoardHeight, 0, master->thisgame), 
+    mMaster(master),
+    innerClock(0)
+{
+    this->mSnake.clear();
+    SnakeBody source = master->getHead();
+    SnakeBody delta(target.getX() - source.getX(),
+                    target.getY() - source.getY());
+    double dX = delta.getX() / sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+    double dY = delta.getY() / sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+    this->dirX = dX * cos(angle) - dY * sin(angle);
+    this->dirY = dX * sin(angle) + dY * cos(angle);
+    this->posX = source.getX();
+    this->posY = source.getY();
+}
+void SniperSnake::moveForward() {
+    this->posX += this->dirX * this->mVelocity;
+    this->posY += this->dirY * this->mVelocity;
+    this->innerClock++;
+}
+void SniperSnake::materialization() {
+    this->mSnake.clear();
+    double curX = this->posX;
+    double curY = this->posY;
+    for (int i = 0; i < this->mLength; i++) {
+        int tX = curX,
+            tY = curY;
+        if (tX >= 1 && tX < this->mGameBoardWidth - 1 && 
+            tY >= 1 && tY < this->mGameBoardHeight - 1)
+                this->mSnake.push_back(SnakeBody(tX, tY));
+        curX += this->dirX;
+        curY += this->dirY;
+    }
+}
+
 
 BossSnake::BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game):
     Snake(gameBoardWidth, gameBoardHeight, 0, game),
@@ -60,6 +100,7 @@ BossSnake::BossSnake(int gameBoardWidth, int gameBoardHeight, Game* game):
     for (int i = -this->mHalfWidth; i <= this->mHalfWidth; i++)
         this->mSnake.push_back(SnakeBody(this->mGameBoardWidth - 2, this->mGameBoardHeight / 2 + i));
     this->mBullet.clear();
+    this->mSniper.clear();
     // this->mHealth = this->mMaxHealth;
 }
 
@@ -126,17 +167,37 @@ void BossSnake::allBulletForward() {
     }
 }
 
+void BossSnake::summonSniper(SnakeBody target, double angle) {
+    this->mSniper.push_back(new SniperSnake(this, target, angle));
+}
+void BossSnake::allSniperForward() {
+    std::vector<SniperSnake*>::iterator i = this->mSniper.begin();
+    while (i != this->mSniper.end()) {
+        if ((*i)->innerClock >= 50) {
+            delete *i;
+            i = this->mSniper.erase(i);
+        }
+        else
+            i++;
+    }
+    for (auto &i : this->mSniper) {
+        i->moveForward();
+        i->materialization();
+    }
+}
+
 void BossSnake::clearBullet()
 {
     for (auto &i : this->mBullet)
         delete i;
     this->mBullet.clear();
+    for (auto &i : this->mSniper)
+        delete i;
+    this->mSniper.clear();
 }
 BossSnake::~BossSnake()
 {
-    for (auto &i : this->mBullet)
-        delete i;
-    this->mBullet.clear();
+    this->clearBullet();
 }
 int BossSnake::getHealth() const {
     return this->mHealth;

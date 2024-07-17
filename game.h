@@ -43,6 +43,7 @@ public:
     void renderFood() const;
     void renderSnake(const std::unique_ptr<Snake> &snake, int clr) const;
     void renderBulletSnake(const BossSnake* master, int clr) const;
+    void renderSniperSnake(const BossSnake* master, int clr) const;
 
     void renderPoints() const;
     void renderDifficulty() const;

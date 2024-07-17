@@ -14,6 +14,7 @@
 #define SNAKE_COLOR 2
 #define DEFAULT_COLOR 3
 #define ENEMY_SNAKE_COLOR 4
+#define SNIPER_SNAKE_COLOR 5
 
 void Game::initializeGame()
 {
@@ -380,9 +381,12 @@ void Game::runGame()
         if (this->mBossSnake && this->animationClock > 100) {
             BossSnake *p = this->getBoss();
             if (p->mHealth > 0) {
-                if (animationClock % 4 == 0)
+                if (animationClock % 5 == 0)
                     p->summonBullet();
+                if (animationClock % 10 == 0 && (p->mAttackClock == 0 || p->mAttackClock >= 2000000))
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 0.0);
                 p->allBulletForward();
+                p->allSniperForward();
             }
             p->attack(); // also death logic
         }
@@ -393,6 +397,7 @@ void Game::runGame()
         this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
         if (this->mBossSnake) {
             this->renderBulletSnake(this->getBoss(), ENEMY_SNAKE_COLOR);
+            this->renderSniperSnake(this->getBoss(), SNIPER_SNAKE_COLOR);
         }
         this->renderFood();
 

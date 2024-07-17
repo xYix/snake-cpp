@@ -49,6 +49,7 @@ class Snake
     friend class Game;
     friend class EnemySnake;
     friend class BulletSnake;
+    friend class SniperSnake;
     friend class BossSnake;
 public:
     //Snake();

@@ -10,6 +10,7 @@
 #define SNAKE_COLOR 2
 #define DEFAULT_COLOR 3
 #define ENEMY_SNAKE_COLOR 4
+#define SNIPER_SNAKE_COLOR 5
 
 Game::Game()
 {
@@ -29,6 +30,7 @@ Game::Game()
     init_pair(SNAKE_COLOR, COLOR_36C48E, COLOR_BLACK);
     init_pair(DEFAULT_COLOR, COLOR_WHITE, COLOR_BLACK);
     init_pair(ENEMY_SNAKE_COLOR, COLOR_BLUE, COLOR_BLACK);
+    init_pair(SNIPER_SNAKE_COLOR, COLOR_CYAN, COLOR_BLACK);
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -296,9 +298,21 @@ void Game::renderSnake(const std::unique_ptr<Snake> &snake, int clr) const
     wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
 }
 void Game::renderBulletSnake(const BossSnake* master, int clr) const {
-    
     wattrset(this->mWindows[1], COLOR_PAIR(clr));
     for (auto &s : master->mBullet) {
+        int snakeLength = s->getLength();
+        std::vector<SnakeBody>& snakebody = s->getSnake();
+        for (int i = 0; i < snakeLength; i ++)
+        {
+            mvwaddch(this->mWindows[1], snakebody[i].getY(), snakebody[i].getX(), this->mSnakeSymbol);
+        }
+    }
+    wrefresh(this->mWindows[1]);
+    wattrset(this->mWindows[1], COLOR_PAIR(DEFAULT_COLOR));
+}
+void Game::renderSniperSnake(const BossSnake* master, int clr) const {
+    wattrset(this->mWindows[1], COLOR_PAIR(clr));
+    for (auto &s : master->mSniper) {
         int snakeLength = s->getLength();
         std::vector<SnakeBody>& snakebody = s->getSnake();
         for (int i = 0; i < snakeLength; i ++)
