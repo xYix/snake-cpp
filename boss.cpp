@@ -65,10 +65,11 @@ SniperSnake::SniperSnake(BossSnake* master, SnakeBody target, double angle) :
                     target.getY() - source.getY());
     double dX = delta.getX() / sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
     double dY = delta.getY() / sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+    angle = angle / 180 * 3.1415926;
     this->dirX = dX * cos(angle) - dY * sin(angle);
     this->dirY = dX * sin(angle) + dY * cos(angle);
-    this->posX = source.getX();
-    this->posY = source.getY();
+    this->posX = source.getX() - this->dirX * this->mVelocity;
+    this->posY = source.getY() - this->dirX * this->mVelocity;
 }
 void SniperSnake::moveForward() {
     this->posX += this->dirX * this->mVelocity;

@@ -209,11 +209,14 @@ bool Snake::checkCollision()
             return true;
     if (this->hitSnake(this->thisgame->mPtrSnake.get()))
         return true;
-    if (this->thisgame->mBossSnake) {
-        if (this->hitSnake(this->thisgame->mBossSnake.get()))
+    if (this->thisgame->mBossSnake && this->thisgame->mPtrSnake.get() == this) {
+        BossSnake *p = this->thisgame->getBoss();
+        if (this->hitSnake(p))
             return true;
-        BossSnake *p = dynamic_cast<BossSnake*>(this->thisgame->mBossSnake.get());
         for (auto &s : p->mBullet)
+            if (this->hitSnake(s))
+                return true;
+        for (auto &s : p->mSniper)
             if (this->hitSnake(s))
                 return true;
     }
@@ -383,7 +386,19 @@ void Game::runGame()
             if (p->mHealth > 0) {
                 if (animationClock % 5 == 0)
                     p->summonBullet();
-                if (animationClock % 10 == 0 && (p->mAttackClock == 0 || p->mAttackClock >= 2000000))
+                if (animationClock % (p->mHealth <= p->mMaxHealth / 2 ? 20 : 30) == 0 && p->mAttackClock == 0)
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 0.0),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 22.5),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 45.0),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), -22.5),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), -45.0);
+                if (p->mAttackClock == 1000000)
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 0.0),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 22.5),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), 45.0),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), -22.5),
+                    p->summonSniper(this->mPtrSnake->createNewHead(), -45.0);
+                if (animationClock % 5 == 0 && p->mAttackClock >= 2000010 && p->mAttackClock <= 2000050)
                     p->summonSniper(this->mPtrSnake->createNewHead(), 0.0);
                 p->allBulletForward();
                 p->allSniperForward();
