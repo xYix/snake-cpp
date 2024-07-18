@@ -18,7 +18,7 @@ class Game
 public:
     Game();
     ~Game();
-    
+
 	void createInformationBoard();
     void renderInformationBoard() const;
     void renderInformationBoard_warning();
@@ -26,10 +26,10 @@ public:
 
     void createGameBoard();
     void renderGameBoard() const;
-    
+
 	void createInstructionBoard();
     void renderInstructionBoard() const;
-		
+
 	void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
@@ -47,13 +47,13 @@ public:
 
     void renderPoints() const;
     void renderDifficulty() const;
-    
+
 	void initializeGame();
     void runGame();
-    
+
 	void createRandomFood();
     void controlSnake();
-    
+
 	void startGame();
     void adjustDifficulty();
 
@@ -91,7 +91,7 @@ private:
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
     const int mNumEnemySnake = 5;
-    
+
     // animation effect
     int animationClock = -1;
 };
