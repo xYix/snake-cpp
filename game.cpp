@@ -313,8 +313,12 @@ void BossSnake::attack() {
 
 void Game::runGame()
 {
+    std::chrono::steady_clock::time_point lastChangeTime = std::chrono::steady_clock::now();
+    int colorChangeCounter = 0; // 初始化计数器
     bool moveSuccess;
     int key;
+    int clor=3;
+    bool isshoushang = false;
     while (true)
     {
         this->controlSnake();
@@ -343,6 +347,8 @@ void Game::runGame()
                 case 2:
                     BossSnake *p = this->getBoss();
                     p->setHealth(p->getHealth() - 10);
+                    isshoushang = true;
+                    colorChangeCounter=0;
                     this->renderInformationBoard_warning();
                     this->mPoints += 5;
                     this->mDelayedLength += 4;
@@ -409,7 +415,31 @@ void Game::runGame()
 		this->renderSnake(this->mPtrSnake, SNAKE_COLOR);
         for (auto &s : this->mPtrEnemySnake)
             this->renderSnake(s, ENEMY_SNAKE_COLOR);
-        this->renderSnake(this->mBossSnake, DEFAULT_COLOR);
+        if(isshoushang==true)  {
+            auto currentTime = std::chrono::steady_clock::now();
+            std::chrono::duration<double> timeSinceLastChange = currentTime - lastChangeTime;
+
+            if (timeSinceLastChange.count() >= 0.25) { // 检查是否已经过了0.5秒
+                colorChangeCounter++;
+                lastChangeTime = currentTime; // 更新最后变化时间
+
+                if (colorChangeCounter % 2 == 0) {
+                    this->renderSnake(this->mBossSnake, 1);
+                    clor= 1;
+                } else {
+                    this->renderSnake(this->mBossSnake, 3);
+                    clor= 3;
+                }
+
+                // 每隔一定时间重置计数器
+                if (colorChangeCounter >=6) {
+                    colorChangeCounter = 0;
+                    isshoushang = false;
+                    clor= 3;
+                }
+            }
+        }
+        this->renderSnake(this->mBossSnake, clor);    
         if (this->mBossSnake) {
             this->renderBulletSnake(this->getBoss(), ENEMY_SNAKE_COLOR);
             this->renderSniperSnake(this->getBoss(), SNIPER_SNAKE_COLOR);
