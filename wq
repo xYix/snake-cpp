@@ -1,0 +1,241 @@
+[33mcommit 8e1d90fe5f3e44ca9d297ee7934f597f098a98ae[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Merge: e258abd 160f51b
+Author: xYix <44130085+xYix@users.noreply.github.com>
+Date:   Thu Jul 18 10:30:06 2024 +0800
+
+    Merge pull request #2 from xYix/effect
+    
+    visual effects
+
+[33mcommit 160f51b672dc8714332a9cebd9835ecef515a573[m[33m ([m[1;31morigin/effect[m[33m)[m
+Author: xyzyxxs0501! <107407161@qq.com>
+Date:   Thu Jul 18 10:29:23 2024 +0800
+
+    fix health
+
+[33mcommit 62b66a9cf4ffbe9551ab777275b1e4f0a6f0741a[m
+Author: xyzyxxs0501! <107407161@qq.com>
+Date:   Thu Jul 18 10:19:04 2024 +0800
+
+    fix indentation
+
+[33mcommit 5866c53b757662c2c38fabf052535c941d528815[m
+Author: xyzyxxs0501! <107407161@qq.com>
+Date:   Thu Jul 18 10:15:47 2024 +0800
+
+    newbranch
+
+[33mcommit e258abd08de61212f8a01cec292e012e90d2f687[m
+Author: xYix <1074071617@qq.com>
+Date:   Wed Jul 17 23:04:22 2024 +0800
+
+    new boss skill(2/2)
+
+[33mcommit a2281cb15ff2515925549b6bcb3f03d3cc6b698d[m
+Merge: 5138554 a6915a3
+Author: xYix <1074071617@qq.com>
+Date:   Wed Jul 17 22:45:57 2024 +0800
+
+    Merge branch 'master' of https://github.com/xYix/snake-cpp
+    qwq
+
+[33mcommit 51385548623478d31d8e16fc8b75d605cdc78305[m
+Author: xYix <1074071617@qq.com>
+Date:   Wed Jul 17 22:45:44 2024 +0800
+
+    new boss skill (1/?)
+
+[33mcommit a6915a378f5a8de4412303f9b4908ce11dcc4f2c[m
+Author: xyzyxxs0501! <107407161@qq.com>
+Date:   Tue Jul 16 18:51:52 2024 +0800
+
+    qwq
+
+[33mcommit a26b830590506d8f89d9aefe9d0afd5e8bac9c12[m
+Author: xyzyxxs0501! <107407161@qq.com>
+Date:   Tue Jul 16 18:50:21 2024 +0800
+
+    qwq
+
+[33mcommit fd309e42439633f82ead1192406fa573cd844a49[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 16 11:49:18 2024 +0800
+
+    fix food overlap
+
+[33mcommit a9125f3ec6d4c236a55aedeeee0d2f9863cc8db1[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 16 11:36:12 2024 +0800
+
+    boss buffed
+
+[33mcommit 016c5f79e8529a5b0092e87777d6960bf199a88d[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 16 11:35:08 2024 +0800
+
+    boss(4/4)
+
+[33mcommit 70c7ab679eed8efaf82c34313c8c0051f3c4e71c[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 16 11:19:46 2024 +0800
+
+    boss(3.5/4)
+
+[33mcommit d2b6c7a75bd3b67b583c9b037becdf190a0f36f5[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 16 11:16:04 2024 +0800
+
+    boss(3/4)
+
+[33mcommit 464ef79e564bb109f1d0c96f03d6eec164be2d12[m
+Merge: 32c96a6 c7b17e7
+Author: xYix <44130085+xYix@users.noreply.github.com>
+Date:   Fri Jul 12 18:59:44 2024 +0800
+
+    Merge pull request #1 from Bonedger/master
+    
+    approved
+
+[33mcommit c7b17e7629451d25945039bad6484a7b67dbe0b1[m
+Author: Tercet Lin <2661087228@qq.com>
+Date:   Thu Jul 11 23:55:01 2024 +0800
+
+    qq
+
+[33mcommit 32c96a6ba07163680bba652ab94945103fbf766c[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jul 11 17:21:41 2024 +0800
+
+    minor bug fix && balance fix
+
+[33mcommit 15b4f49c8e04c019609342b8022422c7140c3939[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jul 11 15:46:59 2024 +0800
+
+    boss fight (2/?)
+
+[33mcommit 13002e524395aed6cf45519f17ad5e29f05a7320[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jul 11 14:33:04 2024 +0800
+
+    food type
+
+[33mcommit 33d15f0fa2dcdaed6e233d3b2bd089317ca8762c[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jul 11 14:26:49 2024 +0800
+
+    ajdust difficulty, bullet now collide with player
+
+[33mcommit 37971435067b88ea7d26ebb9e50c06815dd25b9b[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 9 17:00:21 2024 +0800
+
+    boss fight (1/?)
+
+[33mcommit d780cfd917050bd21ee81fef31d6284dceafb967[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 9 15:47:03 2024 +0800
+
+    boss collision
+
+[33mcommit 7e585258dc024847756c326770066866fe09752c[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 9 15:44:25 2024 +0800
+
+    boss onstage
+
+[33mcommit 0c5605fc53a10c1648bd168b82a844a986dc538b[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 9 14:45:22 2024 +0800
+
+    friend is nice
+
+[33mcommit 626336e079853d900cd9af3e88668364c54c878d[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 9 14:32:05 2024 +0800
+
+    working on boss fight
+
+[33mcommit 8ec69f159d82f199daa3e7a87ba0c321dcc34df4[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 16:00:50 2024 +0800
+
+    bug fix (this time for real)
+
+[33mcommit 9b3d41780d2b544892eb9955b0e2a3bc5e1ac093[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 15:45:47 2024 +0800
+
+    bug fix
+
+[33mcommit 369ac5c5ac05457a677eda98e15b548b87ce5fb2[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 14:51:59 2024 +0800
+
+    5 snake!!!
+
+[33mcommit 58ebc462965b17597238233dca9bf1b11db7909b[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 14:33:45 2024 +0800
+
+    structure optimized
+
+[33mcommit e6db501f6866ab7b2c0fc5d38c2b111edc3eb0b8[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 14:10:55 2024 +0800
+
+    multiple enemy!!!
+
+[33mcommit 24ce47efbd038266dbbaed1a8d117d330e3f7016[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 13:43:11 2024 +0800
+
+    remove vscode setting
+
+[33mcommit a2d006d0d90c83ada0cdfc642dccbc5d33272249[m
+Author: xYix <1074071617@qq.com>
+Date:   Tue Jul 2 13:41:54 2024 +0800
+
+    speed nerf
+
+[33mcommit 5c2efe41f26644df89c6fd30737458bb64de10e2[m
+Author: xYix <1074071617@qq.com>
+Date:   Sun Jun 30 10:32:43 2024 +0800
+
+    update readme
+
+[33mcommit c686c158a526b84643dbcc63358d435d833f9380[m
+Author: xYix <1074071617@qq.com>
+Date:   Sat Jun 29 23:24:38 2024 +0800
+
+    enemy snake done
+
+[33mcommit fe7057adc6671971d2789d73135e57127f1fe72a[m
+Author: xYix <1074071617@qq.com>
+Date:   Sat Jun 29 21:14:31 2024 +0800
+
+    enemy snake (2/3)
+
+[33mcommit b85803daa1acfa0905526fe2c0ca2a215d2057b5[m
+Author: xYix <1074071617@qq.com>
+Date:   Sat Jun 29 19:27:46 2024 +0800
+
+    enemy snake (half)
+
+[33mcommit 02454b59425126067233a09bdc903e7425cb6f2c[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jun 27 17:24:49 2024 +0800
+
+    color
+
+[33mcommit 529aa83c6f5eec263a11f577581678c1ba453356[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jun 27 16:51:20 2024 +0800
+
+    3 food
+
+[33mcommit 7b24d9f17aa6a88b5737fc1b35afb082955fd9e2[m
+Author: xYix <1074071617@qq.com>
+Date:   Thu Jun 27 16:19:35 2024 +0800
+
+    init

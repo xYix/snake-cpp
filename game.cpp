@@ -72,7 +72,7 @@ void Game::createRandomFood()
         bool flag = true;
         while (flag) {
             flag = false;
-            x = 2 + rand() % (this->mGameBoardWidth - 4),
+            x = 2 + rand() % (this->mGameBoardWidth - 14),
             y = 2 + rand() % (this->mGameBoardHeight - 4); // not on the corner
             for (int dx = -1; dx <= 1; dx++)
             for (int dy = -1; dy <= 1; dy++) {
@@ -127,8 +127,8 @@ void Game::controlSnake()
         }
         case 'x':
         {
-            this->mDelayedLength++;
-            this->mPoints += 1;
+            this->mDelayedLength += 36;
+            this->mPoints += 36;
             break;
         }
         case 'z':
@@ -319,6 +319,11 @@ void Game::runGame()
     int key;
     int clor=3;
     bool isshoushang = false;
+    if (this->mLeaderBoard[0] >= 36)
+    {
+        this->mDelayedLength += 36;
+        this->mPoints += 36;
+    }
     while (true)
     {
         this->controlSnake();
