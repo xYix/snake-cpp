@@ -106,18 +106,18 @@ void Game::renderInformationBoard_warning()
         wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
     }
     else if (this->animationClock >= 50) {
-    wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
-    mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
-    mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
-    mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
-    BossSnake *p = this->getBoss();
-    int healthPercentage = (this->animationClock - 50) * 100 / 10; // 计算生命值百分比
-    if (healthPercentage > 100) healthPercentage = 100; // 限制百分比不超过100
-    for (int i = 1; i <= (this->mScreenWidth - 4) * healthPercentage / 100; i++)
-        mvwprintw(this->mWindows[0], 4, 1 + i, "*");
-    wrefresh(this->mWindows[0]);
-    wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
-}
+        wattrset(this->mWindows[0], COLOR_PAIR(FOOD_COLOR));
+        mvwprintw(this->mWindows[0], 1, this->mScreenWidth / 2 - 25, "----------------------- BOSS ----------------------");
+        mvwprintw(this->mWindows[0], 2, this->mScreenWidth / 2 - 25, "------------- Longrraz, Snake of Chaos ------------");
+        mvwprintw(this->mWindows[0], 3, this->mScreenWidth / 2 - 25, "---------------------------------------------------");
+        BossSnake *p = this->getBoss();
+        int healthPercentage = (this->animationClock - 50) * 100 / 10; // 计算生命值百分比
+        if (healthPercentage > 100) healthPercentage = 100; // 限制百分比不超过100
+        for (int i = 1; i <= (this->mScreenWidth - 4) * healthPercentage / 100; i++)
+            mvwprintw(this->mWindows[0], 4, 1 + i, "*");
+        wrefresh(this->mWindows[0]);
+        wattrset(this->mWindows[0], COLOR_PAIR(DEFAULT_COLOR));
+    }
 
 }
 
